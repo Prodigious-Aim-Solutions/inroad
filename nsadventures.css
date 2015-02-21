@@ -1,0 +1,65 @@
+/*
+    Document   : nsadventures
+    Created on : 2015-02-21 09:31 PM
+    Author     : kiefer999
+    Description:
+    Purpose of the stylesheet follows.
+    To change this template use Tools | Templates.
+*/
+
+root {
+    display: block;
+}
+@media only screen and (max-width: 768px) {
+  /* rules that only apply for canvases narrower than 1000px */
+    body {
+         margin: 0;
+         background-image: url(images/Cabot_Landing_Provincial_Park_Back.jpg);
+            /*  background-size: 800px 1400px; */
+         background-repeat:no-repeat;
+         display: compact;
+         font: 13px/18px "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+    h3 {
+        font-family: 'Dancing Script', serif !important;
+        font-size: 30px;
+        text-align: center;
+        color: white;
+    }
+    p {
+        font-family: 'Gudea', serif !important;
+        font-size: 15px;
+        text-align: center;
+        color: white;
+    } 
+}
+
+@media only screen and (min-width:769px) {
+  /* rules that only apply for canvases greater than 1000px */
+    body {
+         margin: 0;
+         background-image: url(images/Cabot_Landing_Provincial_Park_full.jpg);
+         /* background-size: 800px 1400px;  */
+         background-repeat:no-repeat;
+         /*  display: compact; */
+         font: 13px/18px "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+    h3 {
+        font-family: 'Dancing Script', serif !important;
+        font-size: 60px;
+        text-align: center;
+        color: white;
+    }
+    p {
+        font-family: 'Gudea', serif !important;
+        font-size: 50px;
+        text-align: center;
+        color: white;
+    } 
+    .form-control {
+        font-size: 30px;
+        height:60px;
+   }
+}
+
+ 
