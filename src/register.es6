@@ -21,11 +21,17 @@ export class Register {
       success: (data) => {
         data = JSON.parse(data);
         if(data.user){
+          data.user.username = user.username;
           $this[0].$el.parent().hide();
           window.token = data.user.token;
+          window.localStorage.setItem('token', window.token);
+          $('#signInRegModal').modal('hide');
+          $(document).trigger('signInComplete', data.user);
+          $('#regError').hide();
           return
         } else {
-          console.log(`Error: ${data.error}`);
+          $('#regError').text(`Error: ${data.error}`);
+          $('#regError').show();
         }
       },
       error: (err) => {

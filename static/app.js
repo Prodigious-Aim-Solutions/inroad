@@ -9,31 +9,70 @@ var SignIn = require("./signin").SignIn;
 
 var CheckIn = require("./checkin").CheckIn;
 
-var mainApp = function (lat, lon, zoom) {
-  $("#btnGo").on("click", function (e) {
-    $("#splash").hide();
-    $("#mainApp").fadeIn();
-  });
-  new Map(lat, lon, zoom);
-  new Register();
-  new SignIn();
-  new CheckIn();
+var LOCATIONS = {
+  southshore: [44.629711, -64.738421],
+  easternshore: [45.398586, -62.16762],
+  valley: [44.94161, -64.98012],
+  centralns: [45.058138, -63.540911],
+  capebreton: [45.966559, -60.76137]
 };
 
-var selectLocation = function () {
-  return { latitude: 45.329115, longitude: -63.088226 };
+if (window.localStorage.getItem("token")) {
+  new SignIn().session(window.localStorage.getItem("token"));
+} else {
+  new SignIn();
+}
+
+$(document).on("signInComplete", function (e, user) {
+  var user = "<p class=\"navbar-text\"> Hello, " + user.username + "</p>";
+  $("#userDet").html(user);
+});
+
+var loadMapAndData = function (e) {
+  var selLoc = "#selLocation";
+  var selType = "#selType";
+  if (e.currentTarget.id == "btnRefresh") {
+    selLoc = "#refLocation";
+    selType = "#refType";
+  }
+  var newMap = null;
+  var newCheck = null;
+  var $selLocation = $(selLoc);
+  var $selType = $(selType);
+  var locVal = $selLocation.val();
+  var typeVal = $selType.val();
+  if (locVal && typeVal) {
+    $("#splash").hide();
+    $("#mainApp").show();
+    var zoom = locVal == "user" ? 12 : 8;
+    newMap = new Map(LOCATIONS[locVal][0], LOCATIONS[locVal][1], zoom, typeVal);
+    newCheck = new CheckIn();
+  }
+};
+
+var mainApp = function () {
+  $("#btnGo").on("click", loadMapAndData);
+  $("#btnRefresh").on("click", loadMapAndData);
+  new Register();
+  //new SignIn();
+};
+
+var setLocaton = function (lat, lon) {
+  var userOpt = "<option value=\"user\">Your Current Location</option>";
+  $("#selLocation").append(userOpt);
+  $("#selLocation").val("user");
+  LOCATIONS.user = [lat, lon];
 };
 
 if ("geolocation" in navigator) {
   navigator.geolocation.getCurrentPosition(function (position) {
-    mainApp(position.coords.latitude, position.coords.longitude, 12);
+    setLocaton(position.coords.latitude, position.coords.longitude);
+    mainApp();
   }, function () {
-    var position = selectLocation();
-    mainApp(position.latitude, position.longitude, 7);
+    mainApp();
   });
 } else {
-  var position = selectLocation();
-  mainApp(position.latitude, position.longitude, 7);
+  mainApp();
 }
 },{"./checkin":2,"./map":3,"./register":4,"./signin":5}],2:[function(require,module,exports){
 "use strict";
@@ -74,7 +113,9 @@ var CheckIn = exports.CheckIn = (function () {
               console.log("Error " + err);
             }
           });
-        } else {}
+        } else {
+          $("#signInRegModal").modal("show");
+        }
       },
       writable: true,
       configurable: true
@@ -87,8 +128,6 @@ var CheckIn = exports.CheckIn = (function () {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
-//show signin/register popup
 },{}],3:[function(require,module,exports){
 "use strict";
 
@@ -97,7 +136,7 @@ var _prototypeProperties = function (child, staticProps, instanceProps) { if (st
 var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
 
 var Map = exports.Map = (function () {
-  function Map(lat, lon, zoom) {
+  function Map(lat, lon, zoom, type) {
     _classCallCheck(this, Map);
 
     this.mapDisplayData = this.displayData.bind(this);
@@ -111,7 +150,7 @@ var Map = exports.Map = (function () {
       minZoom: 7,
       layers: []
     });
-    this.getData();
+    this.getData(type);
   }
 
   _prototypeProperties(Map, null, {
@@ -163,47 +202,49 @@ var Map = exports.Map = (function () {
       configurable: true
     },
     getData: {
-      value: function getData() {
+      value: function getData(type) {
         var $this = this;
-        $.ajax({
-          url: "static/new_parks.json",
-          success: function success(data) {
-            $this.mapDisplayData(data, "park");
-          },
-          error: function error(err) {
-            console.log("Error" + err.toString());
-          }
-        });
+        if (type === "parks") {
+          $.ajax({
+            url: "static/new_parks.json",
+            success: function success(data) {
+              $this.mapDisplayData(data, "park");
+            },
+            error: function error(err) {
+              console.log("Error" + err.toString());
+            }
+          });
+        } else {
+          $.ajax({
+            url: "static/new_events.json",
+            success: function success(data) {
+              $this.mapDisplayData(data, "historic");
+            },
+            error: function error(err) {
+              console.log("Error" + err.toString());
+            }
+          });
 
-        $.ajax({
-          url: "static/new_events.json",
-          success: function success(data) {
-            $this.mapDisplayData(data, "historic");
-          },
-          error: function error(err) {
-            console.log("Error" + err.toString());
-          }
-        });
+          $.ajax({
+            url: "static/new_persons.json",
+            success: function success(data) {
+              $this.mapDisplayData(data, "historic");
+            },
+            error: function error(err) {
+              console.log("Error" + err.toString());
+            }
+          });
 
-        $.ajax({
-          url: "static/new_persons.json",
-          success: function success(data) {
-            $this.mapDisplayData(data, "historic");
-          },
-          error: function error(err) {
-            console.log("Error" + err.toString());
-          }
-        });
-
-        $.ajax({
-          url: "static/new_sites.json",
-          success: function success(data) {
-            $this.mapDisplayData(data, "historic");
-          },
-          error: function error(err) {
-            console.log("Error" + err.toString());
-          }
-        });
+          $.ajax({
+            url: "static/new_sites.json",
+            success: function success(data) {
+              $this.mapDisplayData(data, "historic");
+            },
+            error: function error(err) {
+              console.log("Error" + err.toString());
+            }
+          });
+        }
       },
       writable: true,
       configurable: true
@@ -250,11 +291,17 @@ var Register = exports.Register = (function () {
           success: function (data) {
             data = JSON.parse(data);
             if (data.user) {
+              data.user.username = user.username;
               $this[0].$el.parent().hide();
               window.token = data.user.token;
+              window.localStorage.setItem("token", window.token);
+              $("#signInRegModal").modal("hide");
+              $(document).trigger("signInComplete", data.user);
+              $("#regError").hide();
               return;
             } else {
-              console.log("Error: " + data.error);
+              $("#regError").text("Error: " + data.error);
+              $("#regError").show();
             }
           },
           error: function (err) {
@@ -301,21 +348,53 @@ var SignIn = exports.SignIn = (function () {
         $.ajax({
           data: JSON.stringify(user),
           type: "POST",
-          url: "//marina-griffin.codio.io:5000/api/v1/signin",
+          url: "/api/v1/signin",
           contentType: "application/json",
           success: function (data) {
             data = JSON.parse(data);
             if (data.user) {
+              data.user.username = user.username;
               $this[0].$el.parent().hide();
               window.token = data.user.token;
+              window.localStorage.setItem("token", window.token);
+              $("#signInRegModal").modal("hide");
+              $(document).trigger("signInComplete", data.user);
+              $("#signError").hide();
               return;
             } else {
-              console.log("Error: " + data.error);
+              $("#signError").show();
+              $("#signError").html("Error: " + data.error);
             }
           },
           error: function (err) {
             console.log("Error: " + err);
             return;
+          }
+        });
+      },
+      writable: true,
+      configurable: true
+    },
+    session: {
+      value: function session(token) {
+        var data = {
+          token: token
+        };
+        $.ajax({
+          type: "POST",
+          url: "/api/v1/session",
+          contentType: "application/json",
+          data: JSON.stringify(data),
+          success: function (data) {
+            data = JSON.parse(data);
+            if (data.user) {
+              $(document).trigger("signInComplete", data.user);
+            } else {
+              window.localStorage.setItem("token", "");
+            }
+          },
+          error: function (err) {
+            window.localStorage.setItem("token", "");
           }
         });
       },

@@ -1,5 +1,5 @@
 export class Map {
-  constructor(lat, lon, zoom){
+  constructor(lat, lon, zoom, type){
     this.mapDisplayData = this.displayData.bind(this);
     this.lat = lat;
     this.lon = lon;
@@ -11,7 +11,7 @@ export class Map {
       minZoom: 7,
       layers: []
     });
-    this.getData();
+    this.getData(type);
   }
 
   displayData(data, locType) {
@@ -56,47 +56,49 @@ export class Map {
     });
   }
     
-  getData() {
+  getData(type) {
     var $this = this;
-    $.ajax({
-      url: "static/new_parks.json",
-      success: function(data){
-        $this.mapDisplayData(data, 'park')
-      },
-      error: function error(err) {
-        console.log("Error" + err.toString());
-      }
-    });
+    if(type === 'parks'){
+      $.ajax({
+        url: "static/new_parks.json",
+        success: function(data){
+          $this.mapDisplayData(data, 'park')
+        },
+        error: function error(err) {
+          console.log("Error" + err.toString());
+        }
+      });
+    } else {
+      $.ajax({
+        url: "static/new_events.json",
+        success: function(data){
+          $this.mapDisplayData(data, 'historic')
+        },
+        error: function error(err) {
+          console.log("Error" + err.toString());
+        }
+      });
 
-    $.ajax({
-      url: "static/new_events.json",
-      success: function(data){
-        $this.mapDisplayData(data, 'historic')
-      },
-      error: function error(err) {
-        console.log("Error" + err.toString());
-      }
-    });
+      $.ajax({
+        url: "static/new_persons.json",
+        success: function(data){
+          $this.mapDisplayData(data, 'historic');
+        },
+        error: function error(err) {
+          console.log("Error" + err.toString());
+        }
+      });
 
-    $.ajax({
-      url: "static/new_persons.json",
-      success: function(data){
-        $this.mapDisplayData(data, 'historic');
-      },
-      error: function error(err) {
-        console.log("Error" + err.toString());
-      }
-    });
-
-    $.ajax({
-      url: "static/new_sites.json",
-      success: function(data){
-        $this.mapDisplayData(data, 'historic');
-      },
-      error: function error(err) {
-        console.log("Error" + err.toString());
-      }
-    });
+      $.ajax({
+        url: "static/new_sites.json",
+        success: function(data){
+          $this.mapDisplayData(data, 'historic');
+        },
+        error: function error(err) {
+          console.log("Error" + err.toString());
+        }
+      });
+   }
     
   }
 }

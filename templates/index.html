@@ -31,15 +31,13 @@
         <div class="navbar-header">
           <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
             <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
+            <img src="static/images/hamburger.png" alt="Hamburger Menu, Get it?!" />
           </button>
           <a class="navbar-brand" href="#"><img src="static/logo_small.png" alt="Nova Scotia Adventures" /></a>
         </div>
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
           <ul class="nav navbar-nav">
-            <li><a href="#" data-toggle="modal" data-target="#signInRegModal">SignIn</a></li>
+            <li id="userDet"><a href="#" data-toggle="modal" data-target="#signInRegModal">Sign In / Register </a></li>
             <li><a href="#" data-toggle="modal" data-target="#aboutModal">About Us</a></li>
             <li><a href="#" data-toggle="modal" data-target="#appModal">The App</a></li>
             <li><a href="#" data-toggle="modal" data-target="#futureModal">The Future</a></li>
@@ -52,32 +50,58 @@
         <div class="col-md-12">    
           <img id="mainLogo" class="img-responsive" src="static/images/NSwhite logo2.png" alt="main logo" >      
           <h3 class="text-center"><strong>Find What You Are Looking For!</strong></h3>
-          <p class="text-center">Where Does Your Adventure Start?</p>
-          <!--         First Menu - Choose Location -->
-          <select class="form-control" name="location" id="location" value="Location">
-            <option value="-1">- Select Location -</option>
-            <option value="southshore">South Shore</option>
-            <option value="easternshore">Eastern Shore</option>
-            <option value="valley">Valley</option>
-            <option value="centralns">Central Nova Scotia</option>
-            <option value="capebreton">Cape Breton</option>
-          </select>
-          <p class="text-center">What Kind Of Adventure Do You Want?</p>
-          <!--       Second Menu - Choose Type of Adventure   -->
-          <select class="form-control" name="adventure" id="adventure" value="Adventure">
-            <option value="-1">- Select Type -</option>
-            <option value="historic">Historic Sites</option>
-            <option value="parks">Parks</option>
-          </select>
-          <div class="form-group">
-            <input id="btnGo" type="button" class="btn btn-primary" value="Get Your Adventure!" />
+          <div class="input-center input-group input-group-md">
+            <p class="text-center">Where Does Your Adventure Start?</p>
+            <!--         First Menu - Choose Location -->
+            <select id="selLocation" class="form-control" name="location" id="location" value="Location">
+              <option value="">- Select Location -</option>
+              <option value="southshore">South Shore</option>
+              <option value="easternshore">Eastern Shore</option>
+              <option value="valley">Valley</option>
+              <option value="centralns">Central Nova Scotia</option>
+              <option value="capebreton">Cape Breton</option>
+            </select>
+          </div>
+          <div class="input-center input-group input-group-md">
+            <p class="text-center">What Kind Of Adventure Do You Want?</p>
+            <!--       Second Menu - Choose Type of Adventure   -->
+            <select id="selType" class="form-control" name="adventure" id="adventure" value="Adventure">
+              <option value="">- Select Type -</option>
+              <option value="historic">Historic Sites</option>
+              <option value="parks">Parks</option>
+            </select>
+            <input id="btnGo" type="button" class="btn btn-primary pull-right" value="Get Your Adventure!" />
           </div>
         </div>
       </section>
 
       <section id="mainApp" class="row" style="display:none">
-        <div class="col-md-12">
+        <div class="col-md-6">
           <div id="theMap">
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="input-center input-group input-group-md">
+            <p class="text-center">Location?</p>
+            <!--         First Menu - Choose Location -->
+            <select id="refLocation" class="form-control" name="location" id="location" value="Location">
+              <option value="">- Select Location -</option>
+              <option value="southshore">South Shore</option>
+              <option value="easternshore">Eastern Shore</option>
+              <option value="valley">Valley</option>
+              <option value="centralns">Central Nova Scotia</option>
+              <option value="capebreton">Cape Breton</option>
+            </select>
+          </div>
+          <div class="input-center input-group input-group-md">
+            <p class="text-center">Type?</p>
+            <!--       Second Menu - Choose Type of Adventure   -->
+            <select id="refType" class="form-control" name="adventure" id="adventure" value="Adventure">
+              <option value="">- Select Type -</option>
+              <option value="historic">Historic Sites</option>
+              <option value="parks">Parks</option>
+            </select>
+            <input id="btnRefresh" type="button" class="btn btn-primary pull-right" value="Get Your Adventure!" />
           </div>
         </div>
       </section>
@@ -115,8 +139,7 @@
           <div class="modal-body">
             <p>Nova Scotia Adventures is an app created with the aim to help people locate what historic 
               sites/parks are available in certain areas. With this app you can explore Nova Scotia and find
-              what youre looking for.As well, you can earn a badge for everytime you check into a park or historic 
-              site, adding to your achievements everytime you visit. </p>
+              what youre looking for. </p>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -133,8 +156,9 @@
             <h4 class="modal-title">The Future</h4>
           </div>
           <div class="modal-body">
-            <p>NProdigious Aim hopes to expand this app to cover all provinces and expand our badges to 
-              cover all sorts of things including events, themes and even holidays!</p>
+            <p>Prodigious Aim hopes to expand this app to cover all provinces and expand to include the earning of badges to 
+              cover all sorts of things including events, themes and even holidays! To add some gamification to the app. As well
+              we hope to add the ability to create lists to organize your adventures.</p>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -175,6 +199,9 @@
                       <input type="button" class="btn btn-primary" value="Register" />
                     </div>
                   </div>
+                  <div id="regError" class="error">
+                    
+                  </div>
                   <div id="signin">
                     <h3>Sign In</h3>
                     <div class="form-group">
@@ -188,6 +215,9 @@
                     <div class="form-group">
                       <input type="button" class="btn btn-primary" value="Sign In" />
                     </div>
+                    <div id="signError" class="error">
+                    
+                  </div>
                   </div>
                 </div>
             </div>

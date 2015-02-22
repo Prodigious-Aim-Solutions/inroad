@@ -6,6 +6,12 @@ a.navbar-brand {
   height: 600px;
 }
 
+@media (max-height: 500px) {  
+  #theMap {
+    height: 400px;
+  }
+}
+
 #mapCanvas {
   height: inherit;
 }

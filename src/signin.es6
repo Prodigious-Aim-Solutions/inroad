@@ -14,16 +14,22 @@ export class SignIn {
     $.ajax({
       data: JSON.stringify(user),
       type: 'POST',
-      url: '//marina-griffin.codio.io:5000/api/v1/signin',
+      url: '/api/v1/signin',
       contentType : 'application/json',
       success: (data) => {
         data = JSON.parse(data);
         if(data.user){
+          data.user.username = user.username;
           $this[0].$el.parent().hide();
           window.token = data.user.token;
+          window.localStorage.setItem('token', window.token);
+          $('#signInRegModal').modal('hide');
+          $(document).trigger('signInComplete', data.user);
+          $('#signError').hide()
           return
         } else {
-          console.log(`Error: ${data.error}`);
+          $('#signError').show();
+          $('#signError').html(`Error: ${data.error}`);
         }
       },
       error: (err) => {
@@ -31,5 +37,28 @@ export class SignIn {
         return
       }
     });
+  }
+  
+  session(token) {
+    var data = {
+      token: token
+    }
+    $.ajax({
+      type: 'POST',
+      url: '/api/v1/session',
+      contentType: 'application/json',
+      data: JSON.stringify(data),
+      success: (data) => {
+        data = JSON.parse(data);
+        if(data.user){
+          $(document).trigger('signInComplete', data.user);
+        } else {
+          window.localStorage.setItem('token', '')
+        }
+      },
+      error: (err) => {
+        window.localStorage.setItem('token', '')
+      }
+    })
   }
 }

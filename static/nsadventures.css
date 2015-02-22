@@ -15,10 +15,12 @@ root {
   margin: 0 auto;
 }
 
-#splash p {
+#splash p, #mainApp p {
   padding: 20px;
 }
-
+.input-center {
+  margin: 0 auto;
+}
 .modal p {
   color: #333;
   font-size: 12pt;
@@ -28,12 +30,19 @@ root {
 .modal h3 {
   color: #333;
 }
+#btnGo, #btnRefresh {
+  margin-top: 15px;
+  background: white;
+  color: black;
+}
+
+
 
 @media only screen and (max-width: 768px) {
   /* rules that only apply for canvases narrower than 1000px */
     body {
          margin: 0;
-         background-image: url(images/Cabot_Landing_Provincial_Park_Back.jpg);
+         /* background-image: url(images/Cabot_Landing_Provincial_Park_Back.jpg); */
             /*  background-size: 800px 1400px; */
          background-repeat:no-repeat;
          display: compact;
@@ -56,7 +65,7 @@ root {
   /* rules that only apply for canvases narrower than 1000px  and in landscape mode */
     body {
          margin: 0;
-         background-image: url(images/Cabot_Landing_Provincial_Park_side.jpg);
+         /* background-image: url(images/Cabot_Landing_Provincial_Park_side.jpg); */
             /*  background-size: 800px 1400px; */
          background-repeat:no-repeat;
          display: compact;
@@ -77,14 +86,6 @@ root {
 }
 @media only screen and (min-width:1401px) {
   /* rules that only apply for canvases greater than 1000px */
-    body {
-         margin: 0;
-         background-image: url(images/Cabot_Landing_Provincial_Park_full.jpg);
-         /* background-size: 800px 1400px;  */
-         background-repeat:no-repeat;
-         /*  display: compact; */
-         font: 13px/18px "Helvetica Neue", Helvetica, Arial, sans-serif;
-    }
     h3 {
         font-family: 'Dancing Script', serif !important;
         font-size: 40px;
@@ -101,6 +102,15 @@ root {
         font-size: 30px;
         height:80px;
    } */
+}
+
+body {
+  margin: 0;
+  background-image: url(images/Southwest_corner_of_Cape_Breton_Highlands_National_Park.png);
+  /* background-size: 800px 1400px;  */
+  background-repeat:no-repeat;
+  /*  display: compact; */
+  font: 13px/18px "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
  

@@ -27,7 +27,7 @@ export class CheckIn {
         }
       });
     } else {
-      //show signin/register popup
+      $('#signInRegModal').modal('show')
     }
   }
 }

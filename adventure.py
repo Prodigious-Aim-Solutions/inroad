@@ -46,7 +46,8 @@ def log_the_user_in(username, password):
           "exp": datetime.datetime.utcnow() + datetime.timedelta(days=1 ),
           "iss": "admin",
           "aud": "all",
-          "userId": str(user['_id'])
+          "userId": str(user['_id']),
+          "username": str(user['username'])
         }, JWT_SECRET)}
 
 def register_the_user(username, email, password):
@@ -101,11 +102,13 @@ def hello():
 @app.route("/api/v1/register", methods=['POST'])
 def register():
   form = RegistrationForm.from_json(request.json)
-  if request.method == 'POST' and form.validate() and not user_exists(request.json['username']):
+  if user_exists(request.json['username']):
+    return json.dumps({"error": "Username or email is already used"})
+  if request.method == 'POST' and form.validate():
     new_user = register_the_user(request.json['username'],
                              request.json['email'],
                              request.json['password'])
-    user = log_the_user_in(new_user.username, new_user.password)
+    user = log_the_user_in(request.json['username'], request.json['password'])
     return json.dumps({"user": user})
   else:
     error = 'Invalid username/password'
@@ -139,6 +142,20 @@ def checkin():
     badge = check_badge(user['userId'], locType)
     return json.dumps({'checkin': 'success', 'badge': False})
   return json.dumps({'error': 'Unsuccessful checkin'})
+
+@app.route("/api/v1/session", methods=['POST'])
+@cross_origin()
+def check_session():
+  token = request.json['token']
+  try:
+    valid_token = jwt.decode(token, JWT_SECRET, audience="all")
+    user = {
+      "username": valid_token['username']
+    }
+    return json.dumps({"user": user})
+  except jwt.ExpiredSignatureError:
+    return json.dumps({"user": False})
+  
 
 if __name__ == "__main__":
     app.run(host= '0.0.0.0', debug=True)
