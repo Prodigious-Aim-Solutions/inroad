@@ -48,7 +48,6 @@ var mainApp = () => {
   $('#btnGo').on('click', loadMapAndData);
   $("#btnRefresh").on('click', loadMapAndData)
   new Register();
-  //new SignIn();
 };
 
 var setLocaton = (lat, lon) => {

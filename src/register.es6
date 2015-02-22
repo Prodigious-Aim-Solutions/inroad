@@ -16,7 +16,7 @@ export class Register {
     $.ajax({
       data: JSON.stringify(user),
       type: 'POST',
-      url: '//marina-griffin.codio.io:5000/api/v1/register',
+      url: '/api/v1/register',
       contentType : 'application/json',
       success: (data) => {
         data = JSON.parse(data);
