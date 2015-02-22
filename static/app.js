@@ -10,6 +10,10 @@ var SignIn = require("./signin").SignIn;
 var CheckIn = require("./checkin").CheckIn;
 
 var mainApp = function (lat, lon, zoom) {
+  $("#btnGo").on("click", function (e) {
+    $("#splash").hide();
+    $("#mainApp").fadeIn();
+  });
   new Map(lat, lon, zoom);
   new Register();
   new SignIn();

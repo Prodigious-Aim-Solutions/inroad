@@ -4,6 +4,10 @@ import {SignIn} from './signin';
 import {CheckIn} from './checkin';
 
 var mainApp = (lat, lon, zoom) => {
+  $('#btnGo').on('click', (e) => {
+    $('#splash').hide();
+    $('#mainApp').fadeIn();
+  })
   new Map(lat, lon, zoom);
   new Register();
   new SignIn();

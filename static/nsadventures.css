@@ -10,7 +10,24 @@
 root {
     display: block;
 }
- 
+
+#mainLogo {
+  margin: 0 auto;
+}
+
+#splash p {
+  padding: 20px;
+}
+
+.modal p {
+  color: #333;
+  font-size: 12pt;
+  text-align: left;
+}
+
+.modal h3 {
+  color: #333;
+}
 
 @media only screen and (max-width: 768px) {
   /* rules that only apply for canvases narrower than 1000px */
