@@ -1,0 +1,26 @@
+{
+  "name": "NovaScotiaAdventures",
+  "version": "0.0.0",
+  "description": "A webapp for discovering parks and/or historic sites around you in Nova Scotia",
+  "main": "Gruntfile.js",
+  "dependencies": {
+    "grunt-babel": "^4.0.0",
+    "grunt": "^0.4.5",
+    "grunt-browserify": "^3.4.0",
+    "grunt-cli": "^0.1.13"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Prodigious-Aim-Solutions/CODE2015.git"
+  },
+  "author": "Prodigious Aim",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Prodigious-Aim-Solutions/CODE2015/issues"
+  },
+  "homepage": "https://github.com/Prodigious-Aim-Solutions/CODE2015"
+}

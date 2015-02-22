@@ -1,0 +1,23 @@
+{
+  "name": "NovaScotiaAdventures",
+  "version": "0.0.0",
+  "homepage": "https://github.com/Prodigious-Aim-Solutions/CODE2015",
+  "authors": [
+    "Corbzilla <jason.ron.corbett@gmail.com>"
+  ],
+  "description": "A webapp for discovering parks and/or historic sites around you in Nova Scotia",
+  "moduleType": [
+    "es6",
+    "node"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "static/bower_components/",
+    "test",
+    "tests"
+  ]
+}
