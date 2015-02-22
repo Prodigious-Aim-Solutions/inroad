@@ -1,6 +1,6 @@
 {
   "name": "NovaScotiaAdventures",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "A webapp for discovering parks and/or historic sites around you in Nova Scotia",
   "main": "Gruntfile.js",
   "dependencies": {
