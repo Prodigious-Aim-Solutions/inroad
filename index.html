@@ -25,29 +25,27 @@
 
 </head>
 <body>
-   <div class="container">       
+    <div class="container">       
        <img class="img-responsive" src="images/NSwhite logo2.png" alt="main logo" >      
        <h3 class="text-center"><strong>Find What You Are Looking For!</strong></h3>
-       <br>
-
-      <div class="container">
-      <form role="form">
-      <div class="form-group">
-          <label for="sel1"><p>Where Does Your Adventure Start?</p></label><br>
-      <select class="form-control" id="sel1">
-        <option>South Shore</option>
-        <option>Eastern Shore</option>
-        <option>Valley</option>
-        <option>Central Nova Scotia</option>
-        <option>Cape Breton</option>
-      </select>      
-        <br><br>
-      <label for="sel1"><p>What Kind Of Adventure Do You Want?</p></label>
-      <select class="form-control" id="sel1">
-        <option>Historic Sites</option>
-        <option>Parks</option>
-       </select>   
-       
-   </div> <!-- /container -->
+       <br />
+        <p class="text-center">Where Does Your Adventure Start?</p>
+<!--         First Menu - Choose Location -->
+        <select class="form-control" name="location" id="location" value="Location">
+          <option value="southshore">South Shore</option>
+          <option value="easternshore">Eastern Shore</option>
+          <option value="valley">Valley</option>
+          <option value="centralns">Central Nova Scotia</option>
+          <option value="capebreton">Cape Breton</option>
+        </select>
+    <br /><br /><br />
+      <p class="text-center">What Kind Of Adventure Do You Want?</p>
+<!--       Second Menu - Choose Type of Adventure   -->
+       <select class="form-control" name="adventure" id="adventure" value="Adventure">
+          <option value="historic">Historic Sites</option>
+          <option value="parks">Parks</option>
+        </select> 
+    <br /><br /><br />
+    </div>
 </body>
 </html>
