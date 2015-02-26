@@ -54,7 +54,6 @@ var mainApp = function () {
   $("#btnGo").on("click", loadMapAndData);
   $("#btnRefresh").on("click", loadMapAndData);
   new Register();
-  //new SignIn();
 };
 
 var setLocaton = function (lat, lon) {
@@ -158,7 +157,7 @@ var Map = exports.Map = (function () {
       value: function displayData(data, locType) {
         var _this = this;
 
-        var usrImg = "static/user.png";
+        var usrImg = "static/images/user.png";
         var userLoc = new google.maps.LatLng(this.lat, this.lon);
         var user = new TurfMap.Marker().create({
           map: this.map.canvas,
@@ -286,7 +285,7 @@ var Register = exports.Register = (function () {
         $.ajax({
           data: JSON.stringify(user),
           type: "POST",
-          url: "//marina-griffin.codio.io:5000/api/v1/register",
+          url: "/api/v1/register",
           contentType: "application/json",
           success: function (data) {
             data = JSON.parse(data);
