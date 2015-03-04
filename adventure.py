@@ -140,7 +140,10 @@ def checkin():
     }
     db.checkin.insert(checkin)
     badge = check_badge(user['userId'], locType)
-    return json.dumps({'checkin': 'success', 'badge': False})
+    badge_out = False
+    if badge:
+      badge_out = {'locType': badge['locType'], 'level': badge['level']}
+    return json.dumps({'checkin': 'success', 'badge': badge_out})
   return json.dumps({'error': 'Unsuccessful checkin'})
 
 @app.route("/api/v1/session", methods=['POST'])

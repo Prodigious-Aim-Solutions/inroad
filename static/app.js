@@ -9,6 +9,8 @@ var SignIn = require("./signin").SignIn;
 
 var CheckIn = require("./checkin").CheckIn;
 
+var Badge = require("./badge").Badge;
+
 var LOCATIONS = {
   southshore: [44.629711, -64.738421],
   easternshore: [45.398586, -62.16762],
@@ -18,6 +20,7 @@ var LOCATIONS = {
 };
 
 if (window.localStorage.getItem("token")) {
+  window.token = window.localStorage.getItem("token");
   new SignIn().session(window.localStorage.getItem("token"));
 } else {
   new SignIn();
@@ -37,6 +40,7 @@ var loadMapAndData = function (e) {
   }
   var newMap = null;
   var newCheck = null;
+  var newBadge = null;
   var $selLocation = $(selLoc);
   var $selType = $(selType);
   var locVal = $selLocation.val();
@@ -47,6 +51,7 @@ var loadMapAndData = function (e) {
     var zoom = locVal == "user" ? 12 : 8;
     newMap = new Map(LOCATIONS[locVal][0], LOCATIONS[locVal][1], zoom, typeVal);
     newCheck = new CheckIn();
+    newBadge = new Badge();
   }
 };
 
@@ -54,13 +59,14 @@ var mainApp = function () {
   $("#btnGo").on("click", loadMapAndData);
   $("#btnRefresh").on("click", loadMapAndData);
   new Register();
-  //new SignIn();
 };
 
 var setLocaton = function (lat, lon) {
   var userOpt = "<option value=\"user\">Your Current Location</option>";
   $("#selLocation").append(userOpt);
   $("#selLocation").val("user");
+  $("#refLocation").append(userOpt);
+  $("#refLocation").val("user");
   LOCATIONS.user = [lat, lon];
 };
 
@@ -74,7 +80,58 @@ if ("geolocation" in navigator) {
 } else {
   mainApp();
 }
-},{"./checkin":2,"./map":3,"./register":4,"./signin":5}],2:[function(require,module,exports){
+},{"./badge":2,"./checkin":3,"./map":4,"./register":5,"./signin":6}],2:[function(require,module,exports){
+"use strict";
+
+var _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
+
+var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
+
+var Badge = exports.Badge = (function () {
+  function Badge() {
+    _classCallCheck(this, Badge);
+
+    this.$el = $("#badgeModal");
+    this.createBadge = this.showBadge.bind(this);
+    $(document).on("badgeEarned", this.createBadge);
+    return this;
+  }
+
+  _prototypeProperties(Badge, null, {
+    setDetails: {
+      value: function setDetails(args) {
+        this.$el.find(".type").empty().text(args.type);
+        this.$el.find(".description").empty().text("You are now at " + args.description);
+        return this;
+      },
+      writable: true,
+      configurable: true
+    },
+    displayModal: {
+      value: function displayModal() {
+        this.$el.modal("show");
+        return this;
+      },
+      writable: true,
+      configurable: true
+    },
+    showBadge: {
+      value: function showBadge(e, type, description) {
+        this.setDetails({ type: type, description: description });
+        this.displayModal();
+      },
+      writable: true,
+      configurable: true
+    }
+  });
+
+  return Badge;
+})();
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+},{}],3:[function(require,module,exports){
 "use strict";
 
 var _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
@@ -106,8 +163,12 @@ var CheckIn = exports.CheckIn = (function () {
             url: "/api/v1/checkin",
             data: JSON.stringify(userCheckin),
             success: function (data) {
+              data = JSON.parse(data);
               $target.addClass("disabled");
               $(document).trigger("checkInComplete");
+              if (data.badge) {
+                $(document).trigger("badgeEarned", [data.badge.locType, data.badge.level]);
+              }
             },
             error: function (err) {
               console.log("Error " + err);
@@ -128,7 +189,7 @@ var CheckIn = exports.CheckIn = (function () {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 "use strict";
 
 var _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
@@ -171,8 +232,8 @@ var Map = exports.Map = (function () {
             location: latLon,
             title: el.title
           });
-          var neLatLon = new google.maps.LatLng(el.geometry.coordinates[1] + 0.01, el.geometry.coordinates[0] + 0.01);
-          var swLatLong = new google.maps.LatLng(el.geometry.coordinates[1] - 0.01, el.geometry.coordinates[0] - 0.01);
+          var neLatLon = new google.maps.LatLng(parseFloat(el.geometry.coordinates[1]) + 0.5, parseFloat(el.geometry.coordinates[0]) + 0.5);
+          var swLatLong = new google.maps.LatLng(parseFloat(el.geometry.coordinates[1]) - 0.5, parseFloat(el.geometry.coordinates[0]) - 0.5);
           var bounds = new google.maps.LatLngBounds(swLatLong, neLatLon);
           var inBounds = false;
           if (bounds.contains(userLoc)) {
@@ -206,7 +267,7 @@ var Map = exports.Map = (function () {
         var $this = this;
         if (type === "parks") {
           $.ajax({
-            url: "static/new_parks.json",
+            url: "static/new_parks_conservation.json",
             success: function success(data) {
               $this.mapDisplayData(data, "park");
             },
@@ -236,7 +297,7 @@ var Map = exports.Map = (function () {
           });
 
           $.ajax({
-            url: "static/new_sites.json",
+            url: "static/new_sites_clean.json",
             success: function success(data) {
               $this.mapDisplayData(data, "historic");
             },
@@ -257,7 +318,7 @@ var Map = exports.Map = (function () {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 "use strict";
 
 var _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
@@ -286,7 +347,7 @@ var Register = exports.Register = (function () {
         $.ajax({
           data: JSON.stringify(user),
           type: "POST",
-          url: "//marina-griffin.codio.io:5000/api/v1/register",
+          url: "/api/v1/register",
           contentType: "application/json",
           success: function (data) {
             data = JSON.parse(data);
@@ -321,7 +382,7 @@ var Register = exports.Register = (function () {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 "use strict";
 
 var _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
@@ -409,4 +470,4 @@ var SignIn = exports.SignIn = (function () {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-},{}]},{},[1,2,3,4,5]);
+},{}]},{},[1,2,3,4,5,6]);

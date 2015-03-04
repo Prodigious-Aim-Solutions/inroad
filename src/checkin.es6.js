@@ -19,8 +19,12 @@ export class CheckIn {
         url: '/api/v1/checkin',
         data: JSON.stringify(userCheckin),
         success: (data) => {
+          data = JSON.parse(data);
           $target.addClass('disabled')
           $(document).trigger('checkInComplete')
+          if(data.badge){
+            $(document).trigger('badgeEarned', [data.badge.locType, data.badge.level])
+          }
         },
         error: (err) =>{
           console.log(`Error ${err}`);

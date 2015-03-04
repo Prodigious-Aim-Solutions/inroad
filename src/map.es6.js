@@ -28,8 +28,8 @@ export class Map {
         location: latLon,
         title: el.title
       });
-      var neLatLon = new google.maps.LatLng(el.geometry.coordinates[1] + 0.01, el.geometry.coordinates[0] + 0.01);
-      var swLatLong = new google.maps.LatLng(el.geometry.coordinates[1] - 0.01, el.geometry.coordinates[0] - 0.01);
+      var neLatLon = new google.maps.LatLng(parseFloat(el.geometry.coordinates[1]) + 0.5, parseFloat(el.geometry.coordinates[0]) + 0.5);
+      var swLatLong = new google.maps.LatLng(parseFloat(el.geometry.coordinates[1]) - 0.5, parseFloat(el.geometry.coordinates[0]) - 0.5);
       var bounds = new google.maps.LatLngBounds(swLatLong, neLatLon);
       var inBounds = false;
       if(bounds.contains(userLoc)){
@@ -60,7 +60,7 @@ export class Map {
     var $this = this;
     if(type === 'parks'){
       $.ajax({
-        url: "static/new_parks.json",
+        url: "static/new_parks_conservation.json",
         success: function(data){
           $this.mapDisplayData(data, 'park')
         },
@@ -90,7 +90,7 @@ export class Map {
       });
 
       $.ajax({
-        url: "static/new_sites.json",
+        url: "static/new_sites_clean.json",
         success: function(data){
           $this.mapDisplayData(data, 'historic');
         },
