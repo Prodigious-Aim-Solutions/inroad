@@ -113,4 +113,8 @@ body {
   font: 13px/18px "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
+.outline-text {
+    text-shadow: black 1px 1px;
+}
+
  

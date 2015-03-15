@@ -3,3 +3,4 @@ src/.tmp/
 .codio
 deploy/
 openshift.sh
+data/

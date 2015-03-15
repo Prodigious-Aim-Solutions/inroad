@@ -49,9 +49,9 @@
       <section id="splash" class="row">
         <div class="col-md-12">    
           <img id="mainLogo" class="img-responsive" src="static/images/NSwhite logo2.png" alt="main logo" >      
-          <h3 class="text-center"><strong>Find What You Are Looking For!</strong></h3>
+          <h3 class="text-center outline-text"><strong>Find What You Are Looking For!</strong></h3>
           <div class="input-center input-group input-group-md">
-            <p class="text-center">Where Does Your Adventure Start?</p>
+            <p class="text-center outline-text">Where Does Your Adventure Start?</p>
             <!--         First Menu - Choose Location -->
             <select id="selLocation" class="form-control" name="location" id="location" value="Location">
               <option value="">- Select Location -</option>
@@ -63,7 +63,7 @@
             </select>
           </div>
           <div class="input-center input-group input-group-md">
-            <p class="text-center">What Kind Of Adventure Do You Want?</p>
+            <p class="text-center outline-text">What Kind Of Adventure Do You Want?</p>
             <!--       Second Menu - Choose Type of Adventure   -->
             <select id="selType" class="form-control" name="adventure" id="adventure" value="Adventure">
               <option value="">- Select Type -</option>
@@ -159,6 +159,25 @@
             <p>Prodigious Aim hopes to expand this app to cover all provinces and expand to include the earning of badges to 
               cover all sorts of things including events, themes and even holidays! To add some gamification to the app. As well
               we hope to add the ability to create lists to organize your adventures.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    
+    <div id="badgeModal" class="modal fade">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h2 class="modal-title">Congratulations!</h2>
+          </div>
+          <div class="modal-body">
+            <h3>You Earned a Badge!</h3>
+            <div class="type"></div>
+            <div class="description"></div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

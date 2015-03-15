@@ -5,11 +5,12 @@ module.exports = function(grunt) {
     'babel': {
       dist: {
         files: {
-          'src/.tmp/app.js': 'src/app.es6',
-          'src/.tmp/map.js': 'src/map.es6',
-          'src/.tmp/register.js': 'src/register.es6',
-          'src/.tmp/signin.js': 'src/signin.es6',
-          'src/.tmp/checkin.js': 'src/checkin.es6'
+          'src/.tmp/app.js': 'src/app.es6.js',
+          'src/.tmp/map.js': 'src/map.es6.js',
+          'src/.tmp/register.js': 'src/register.es6.js',
+          'src/.tmp/signin.js': 'src/signin.es6.js',
+          'src/.tmp/checkin.js': 'src/checkin.es6.js',
+          'src/.tmp/badge.js': 'src/badge.es6.js'
         }
       }
     },

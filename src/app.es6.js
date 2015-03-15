@@ -2,6 +2,7 @@ import {Map} from './map';
 import {Register} from './register';
 import {SignIn} from './signin';
 import {CheckIn} from './checkin';
+import {Badge} from './badge';
 
 var LOCATIONS = {
   southshore: [44.629711, -64.738421],
@@ -12,6 +13,7 @@ var LOCATIONS = {
 };
 
 if(window.localStorage.getItem('token')){
+  window.token = window.localStorage.getItem('token');
   new SignIn().session(window.localStorage.getItem('token'));
 } else {
   new SignIn();
@@ -31,6 +33,7 @@ var loadMapAndData = (e) => {
   }
   var newMap = null;
   var newCheck = null;
+  var newBadge = null;
   var $selLocation = $(selLoc);
   var $selType = $(selType);
   var locVal = $selLocation.val()
@@ -41,6 +44,7 @@ var loadMapAndData = (e) => {
     var zoom = locVal == 'user' ? 12 : 8;
     newMap = new Map(LOCATIONS[locVal][0], LOCATIONS[locVal][1], zoom, typeVal);
     newCheck = new CheckIn();
+    newBadge = new Badge();
   }
 }
 
@@ -54,6 +58,8 @@ var setLocaton = (lat, lon) => {
   var userOpt = `<option value="user">Your Current Location</option>`;
   $('#selLocation').append(userOpt);
   $('#selLocation').val('user');
+  $('#refLocation').append(userOpt);
+  $('#refLocation').val('user');
   LOCATIONS['user'] = [lat, lon]
 }
 
