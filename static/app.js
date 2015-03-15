@@ -232,8 +232,8 @@ var Map = exports.Map = (function () {
             location: latLon,
             title: el.title
           });
-          var neLatLon = new google.maps.LatLng(parseFloat(el.geometry.coordinates[1]) + 0.5, parseFloat(el.geometry.coordinates[0]) + 0.5);
-          var swLatLong = new google.maps.LatLng(parseFloat(el.geometry.coordinates[1]) - 0.5, parseFloat(el.geometry.coordinates[0]) - 0.5);
+          var neLatLon = new google.maps.LatLng(parseFloat(el.geometry.coordinates[1]) + 0.01, parseFloat(el.geometry.coordinates[0]) + 0.01);
+          var swLatLong = new google.maps.LatLng(parseFloat(el.geometry.coordinates[1]) - 0.01, parseFloat(el.geometry.coordinates[0]) - 0.01);
           var bounds = new google.maps.LatLngBounds(swLatLong, neLatLon);
           var inBounds = false;
           if (bounds.contains(userLoc)) {

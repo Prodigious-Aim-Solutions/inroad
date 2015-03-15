@@ -77,15 +77,15 @@ def check_badge(userId, locType):
   checkInsLen = checkIns.count()
   if badges["level"] == 3:
     return False
-  if checkInsLen > 2 and badges["level"] < 1:
+  if checkInsLen == 3 and badges["level"] < 1:
     badge['level'] = 1
     db.badges.insert(badge)
     return badge
-  elif checkInsLen > 5 and badges["level"] < 2:
+  elif checkInsLen == 6 and badges["level"] < 2:
     badge['level'] = 2
     db.badges.insert(badge)
     return badge
-  elif checkInsLen > 9 and badges["level"] < 3:
+  elif checkInsLen == 10 and badges["level"] < 3:
     badge['level'] = 3
     db.badges.insert(badge)
     return badge
