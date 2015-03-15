@@ -15,7 +15,7 @@ module.exports = function(grunt) {
       }
     },
     'browserify': {
-      'static/app.js': ['src/.tmp/*.js']
+      'static/js/app.js': ['src/.tmp/*.js']
     }
   });
 

@@ -219,7 +219,7 @@ var Map = exports.Map = (function () {
       value: function displayData(data, locType) {
         var _this = this;
 
-        var usrImg = "static/user.png";
+        var usrImg = "static/images/user.png";
         var userLoc = new google.maps.LatLng(this.lat, this.lon);
         var user = new TurfMap.Marker().create({
           map: this.map.canvas,
