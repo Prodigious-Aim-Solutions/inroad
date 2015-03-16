@@ -21,8 +21,9 @@
     <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Dancing Script">
     <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Gudea">      
     <!-- custom CSS -->  
-    <link rel="stylesheet" type="text/css" href="static/css/nsadventures.css"> 
-    <link rel="stylesheet" type="text/css" href="static/css/main.css">
+    <!-- <link rel="stylesheet" type="text/css" href="static/css/nsadventures.css"> -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/nsadventures.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
   </head>
   <body>
     <nav class="navbar navbar-default">
@@ -61,7 +62,12 @@
               <option value="centralns">Central Nova Scotia</option>
               <option value="capebreton">Cape Breton</option>
             </select>
-          </div>
+            <div class="checkbox">
+              <label class="outline-text">
+                <input type="checkbox" id="selUpdate" checked/> Automatically Update Location?
+              </label>
+            </div>
+          </div>          
           <div class="input-center input-group input-group-md">
             <p class="text-center outline-text">What Kind Of Adventure Do You Want?</p>
             <!--       Second Menu - Choose Type of Adventure   -->
@@ -82,7 +88,7 @@
         </div>
         <div class="col-md-6">
           <div class="input-center input-group input-group-md">
-            <p class="text-center">Location?</p>
+            <p class="text-center outline-text">Location?</p>
             <!--         First Menu - Choose Location -->
             <select id="refLocation" class="form-control" name="location" id="location" value="Location">
               <option value="">- Select Location -</option>
@@ -92,9 +98,14 @@
               <option value="centralns">Central Nova Scotia</option>
               <option value="capebreton">Cape Breton</option>
             </select>
+            <div class="checkbox">
+              <label class="outline-text">
+                <input type="checkbox" id="selUpdate" checked/> Automatically Update Location?
+              </label>
+            </div>
           </div>
           <div class="input-center input-group input-group-md">
-            <p class="text-center">Type?</p>
+            <p class="text-center outline-text">Type?</p>
             <!--       Second Menu - Choose Type of Adventure   -->
             <select id="refType" class="form-control" name="adventure" id="adventure" value="Adventure">
               <option value="">- Select Type -</option>
@@ -248,6 +259,6 @@
     </div><!-- /.modal -->
     </div>
     <script src="static/js/turf-map.js"></script>
-    <script src="static/js/app.js"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
   </body>
 </html>

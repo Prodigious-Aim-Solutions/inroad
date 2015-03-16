@@ -15,12 +15,13 @@ export class Map {
   }
 
   displayData(data, locType) {
-    var usrImg = "static/images/user.png";
-    var userLoc = new google.maps.LatLng(this.lat, this.lon);
-    var user = new TurfMap.Marker().create({
+    this.usrImg = "static/images/user.png";
+    this.userLoc = new google.maps.LatLng(this.lat, this.lon);
+    this.user = new TurfMap.Marker().create({
       map: this.map.canvas,
-      location: userLoc });
-    user.setIcon(usrImg);
+      location: this.userLoc 
+    });
+    this.user.setIcon(this.usrImg);
     $.each(data, (index, el) => {
       var latLon = new google.maps.LatLng(el.geometry.coordinates[1], el.geometry.coordinates[0]);
       var marker = new TurfMap.Marker().create({
@@ -32,7 +33,7 @@ export class Map {
       var swLatLong = new google.maps.LatLng(parseFloat(el.geometry.coordinates[1]) - 0.01, parseFloat(el.geometry.coordinates[0]) - 0.01);
       var bounds = new google.maps.LatLngBounds(swLatLong, neLatLon);
       var inBounds = false;
-      if(bounds.contains(userLoc)){
+      if(bounds.contains(this.userLoc)){
         inBounds = true;
       }
       var infoWindow = new TurfMap.InfoWindow().data;
@@ -54,6 +55,14 @@ export class Map {
         infoWindow.close()
       });
     });
+  }
+  
+  updateLocation(lat, lon){
+    this.lat = lat;
+    this.lon = lon;
+    this.userLoc = new google.maps.LatLng(this.lat, this.lon);
+    this.user.setPosition(this.userLoc);
+    //this.user.setIcon(this.usrImg);
   }
     
   getData(type) {

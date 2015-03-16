@@ -1,5 +1,5 @@
 from pymongo import MongoClient
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, url_for
 from wtforms import Form, BooleanField, TextField, PasswordField, validators
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask.ext.cors import CORS, cross_origin
@@ -8,6 +8,7 @@ import json
 import wtforms_json
 import jwt
 import datetime
+import os
 
 JWT_SECRET = "SP0CKTHEC@T"
 
@@ -94,6 +95,24 @@ def check_badge(userId, locType):
 app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
+
+@app.after_request
+def add_header(response):
+    response.cache_control.max_age = 300
+    return response
+  
+@app.context_processor
+def override_url_for():
+    return dict(url_for=dated_url_for)
+
+def dated_url_for(endpoint, **values):
+    if endpoint == 'static':
+        filename = values.get('filename', None)
+        if filename:
+            file_path = os.path.join(app.root_path,
+                                     endpoint, filename)
+            values['q'] = int(os.stat(file_path).st_mtime)
+    return url_for(endpoint, **values)
 
 @app.route("/")
 def hello():
