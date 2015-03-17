@@ -264,8 +264,8 @@ var DestinationList = exports.DestinationList = (function () {
         var id = this.$el.data("id");
         var destIds = [];
         var items = this.$el.find("ul li");
-        item.each(function (index, el) {
-          destIds.push($(el).data(id));
+        items.each(function (index, el) {
+          destIds.push($(el).data("locId"));
         });
         var list = {
           id: id,

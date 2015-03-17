@@ -23,8 +23,8 @@ export class DestinationList {
     var id = this.$el.data('id');
     var destIds = [];
     var items = this.$el.find('ul li');
-    item.each((index, el) =>{
-      destIds.push($(el).data(id));
+    items.each((index, el) =>{
+      destIds.push($(el).data('locId'));
     });
     var list = {
       id: id,
