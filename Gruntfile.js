@@ -10,7 +10,9 @@ module.exports = function(grunt) {
           'src/.tmp/register.js': 'src/register.es6.js',
           'src/.tmp/signin.js': 'src/signin.es6.js',
           'src/.tmp/checkin.js': 'src/checkin.es6.js',
-          'src/.tmp/badge.js': 'src/badge.es6.js'
+          'src/.tmp/badge.js': 'src/badge.es6.js',
+          'src/.tmp/destinationList.js': 'src/destinationList.es6.js',
+          'src/.tmp/destinationLists.js': 'src/destinationLists.es6.js'
         }
       }
     },

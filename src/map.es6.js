@@ -40,7 +40,7 @@ export class Map {
       var title = "<h4>" + el.title + "</h4>";
       var checkin = inBounds ? "<div class='form-group'><input type='button' class='btn btn-checkin' value='Check In Here' /></div>" : "";
       var addToDest = "<div class='form-group'><input type='button' class='btn btn-add-dest' value='Add to Destinations' /></div>";
-      var description = el.details ? el.details + checkin : checkin;
+      var description = el.details ? el.details + addToDest + checkin : addToDest + checkin;
       var content = description ? title + description : title;
       content = wrap + content + "</div>";
       infoWindow.setOptions({
