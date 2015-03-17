@@ -106,7 +106,7 @@ root {
 
 body {
   margin: 0;
-  background-image: url(images/Southwest_corner_of_Cape_Breton_Highlands_National_Park.png);
+  background-image: url(../images/Southwest_corner_of_Cape_Breton_Highlands_National_Park.png);
   /* background-size: 800px 1400px;  */
   background-repeat:no-repeat;
   /*  display: compact; */
