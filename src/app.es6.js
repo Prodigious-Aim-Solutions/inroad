@@ -3,6 +3,8 @@ import {Register} from './register';
 import {SignIn} from './signin';
 import {CheckIn} from './checkin';
 import {Badge} from './badge';
+import {DestinationList} from './destinationList';
+import {DestinationLists} from './destinationLists'
 
 var app = {};
 
@@ -56,6 +58,8 @@ var mainApp = () => {
   $('#btnGo').on('click', loadMapAndData);
   $("#btnRefresh").on('click', loadMapAndData)
   new Register();
+  new DestinationList();
+  new DestinationLists();
 };
 
 var setLocaton = (lat, lon) => {

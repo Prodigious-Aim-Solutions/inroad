@@ -3,17 +3,18 @@ export class DestinationList {
     this.$el = $('#currentList');
     this.add = this.add.bind(this);
     this.save = this.save.bind(this);
-    $(document).on('click', '.btn-add-dest', this.add);
+    $(document).on('click', '.btn-add-dest:not(.disabled)', this.add);
     $('#btnSaveDestList').on('click', this.save)
   }
   
   add(e) {
     var $current = $(e.currentTarget);
-    var data = $current.data('id');
-    if(!this.$el.find(`[data-id]=${data}`).length) {
+    var data = $current.parents('.location').data('id');
+    if(!this.$el.find(`[data-id="${data}"]`).length) {
       var name = $current.parents('.location').find('h4').text();
-      var destinationTmpl = `<li data-loc-id="${data}"><h3>${name}</h3><div class="form-group"><input type="button" class="btn btn-remove-dest" value="Remove" /></div></li>`;
+      var destinationTmpl = `<li data-loc-id="${data}"><h4>${name}</h4><div class="form-group"><input type="button" class="btn btn-remove-dest" value="Remove" /></div></li>`;
       this.$el.find('ul').append(destinationTmpl);
+      $current.addClass('disabled');
     }
   }
   

@@ -11,6 +11,13 @@ root {
     display: block;
 }
 
+#mainApp li {
+  background: white;
+  padding: 10px;
+  border-radius: 3px;
+  margin: 5px 0;
+}
+
 #mainLogo {
   margin: 0 auto;
 }
@@ -30,7 +37,7 @@ root {
 .modal h3 {
   color: #333;
 }
-#btnGo, #btnRefresh {
+#btnGo, #btnRefresh, #btnSaveDestList {
   margin-top: 15px;
   background: white;
   color: black;
