@@ -4,6 +4,10 @@ import {SignIn} from './signin';
 import {CheckIn} from './checkin';
 import {Badge} from './badge';
 
+var app = {};
+
+app.watch = true;
+
 var LOCATIONS = {
   southshore: [44.629711, -64.738421],
   easternshore: [45.398586, -62.167620],
@@ -42,7 +46,7 @@ var loadMapAndData = (e) => {
     $('#splash').hide();
     $('#mainApp').show();
     var zoom = locVal == 'user' ? 12 : 8;
-    newMap = new Map(LOCATIONS[locVal][0], LOCATIONS[locVal][1], zoom, typeVal);
+    app.newMap = new Map(LOCATIONS[locVal][0], LOCATIONS[locVal][1], zoom, typeVal);
     newCheck = new CheckIn();
     newBadge = new Badge();
   }
@@ -60,8 +64,15 @@ var setLocaton = (lat, lon) => {
   $('#selLocation').val('user');
   $('#refLocation').append(userOpt);
   $('#refLocation').val('user');
-  LOCATIONS['user'] = [lat, lon]
-}
+  LOCATIONS['user'] = [lat, lon];
+};
+
+var updateLocation = (lat, lon) => {
+  LOCATIONS['user'] = [lat, lon];
+  if(app.newMap){
+    app.newMap.updateLocation(lat, lon);
+  }
+};
 
 if ("geolocation" in navigator) {
   navigator.geolocation.getCurrentPosition((position) => {
@@ -70,6 +81,24 @@ if ("geolocation" in navigator) {
   }, () => {
     mainApp();
   });
+  
+  if(app.watch){
+    var watchID = navigator.geolocation.watchPosition(function(position) {
+      updateLocation(position.coords.latitude, position.coords.longitude);
+    });
+    $('#selUpdate, #refUpdate').on('change', () =>{      
+      if($(this).is(':checked')){
+        app.watch = true;
+        watchID = navigator.geolocation.watchPosition(function(position) {
+          updateLocation(position.coords.latitude, position.coords.longitude);
+        });
+        return;
+      }
+      app.watch = false;
+      navigator.geolocation.clearWatch(watchID);
+    });
+  }
+  
 } else {
   mainApp();
 }

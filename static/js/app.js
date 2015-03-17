@@ -11,6 +11,10 @@ var CheckIn = require("./checkin").CheckIn;
 
 var Badge = require("./badge").Badge;
 
+var app = {};
+
+app.watch = true;
+
 var LOCATIONS = {
   southshore: [44.629711, -64.738421],
   easternshore: [45.398586, -62.16762],
@@ -49,7 +53,7 @@ var loadMapAndData = function (e) {
     $("#splash").hide();
     $("#mainApp").show();
     var zoom = locVal == "user" ? 12 : 8;
-    newMap = new Map(LOCATIONS[locVal][0], LOCATIONS[locVal][1], zoom, typeVal);
+    app.newMap = new Map(LOCATIONS[locVal][0], LOCATIONS[locVal][1], zoom, typeVal);
     newCheck = new CheckIn();
     newBadge = new Badge();
   }
@@ -70,6 +74,13 @@ var setLocaton = function (lat, lon) {
   LOCATIONS.user = [lat, lon];
 };
 
+var updateLocation = function (lat, lon) {
+  LOCATIONS.user = [lat, lon];
+  if (app.newMap) {
+    app.newMap.updateLocation(lat, lon);
+  }
+};
+
 if ("geolocation" in navigator) {
   navigator.geolocation.getCurrentPosition(function (position) {
     setLocaton(position.coords.latitude, position.coords.longitude);
@@ -77,6 +88,23 @@ if ("geolocation" in navigator) {
   }, function () {
     mainApp();
   });
+
+  if (app.watch) {
+    var watchID = navigator.geolocation.watchPosition(function (position) {
+      updateLocation(position.coords.latitude, position.coords.longitude);
+    });
+    $("#selUpdate, #refUpdate").on("change", function () {
+      if ($(undefined).is(":checked")) {
+        app.watch = true;
+        watchID = navigator.geolocation.watchPosition(function (position) {
+          updateLocation(position.coords.latitude, position.coords.longitude);
+        });
+        return;
+      }
+      app.watch = false;
+      navigator.geolocation.clearWatch(watchID);
+    });
+  }
 } else {
   mainApp();
 }
@@ -219,12 +247,13 @@ var Map = exports.Map = (function () {
       value: function displayData(data, locType) {
         var _this = this;
 
-        var usrImg = "static/images/user.png";
-        var userLoc = new google.maps.LatLng(this.lat, this.lon);
-        var user = new TurfMap.Marker().create({
+        this.usrImg = "static/images/user.png";
+        this.userLoc = new google.maps.LatLng(this.lat, this.lon);
+        this.user = new TurfMap.Marker().create({
           map: this.map.canvas,
-          location: userLoc });
-        user.setIcon(usrImg);
+          location: this.userLoc
+        });
+        this.user.setIcon(this.usrImg);
         $.each(data, function (index, el) {
           var latLon = new google.maps.LatLng(el.geometry.coordinates[1], el.geometry.coordinates[0]);
           var marker = new TurfMap.Marker().create({
@@ -236,7 +265,7 @@ var Map = exports.Map = (function () {
           var swLatLong = new google.maps.LatLng(parseFloat(el.geometry.coordinates[1]) - 0.01, parseFloat(el.geometry.coordinates[0]) - 0.01);
           var bounds = new google.maps.LatLngBounds(swLatLong, neLatLon);
           var inBounds = false;
-          if (bounds.contains(userLoc)) {
+          if (bounds.contains(_this.userLoc)) {
             inBounds = true;
           }
           var infoWindow = new TurfMap.InfoWindow().data;
@@ -258,6 +287,17 @@ var Map = exports.Map = (function () {
             infoWindow.close();
           });
         });
+      },
+      writable: true,
+      configurable: true
+    },
+    updateLocation: {
+      value: function updateLocation(lat, lon) {
+        this.lat = lat;
+        this.lon = lon;
+        this.userLoc = new google.maps.LatLng(this.lat, this.lon);
+        this.user.setPosition(this.userLoc);
+        //this.user.setIcon(this.usrImg);
       },
       writable: true,
       configurable: true
