@@ -5,6 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask.ext.cors import CORS, cross_origin
 from bson.objectid import ObjectId
 import json
+from bson.json_util import dumps
 import wtforms_json
 import jwt
 import datetime
@@ -92,6 +93,11 @@ def check_badge(userId, locType):
     return badge
   return False
 
+def create_dest_list(dest_list):
+  new_dest_list = db.destinationlists.insert(dest_list)
+  return new_dest_list
+
+
 app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
@@ -164,6 +170,15 @@ def checkin():
       badge_out = {'locType': badge['locType'], 'level': badge['level']}
     return json.dumps({'checkin': 'success', 'badge': badge_out})
   return json.dumps({'error': 'Unsuccessful checkin'})
+
+@app.route("/api/v1/destinationlist", methods=['POST'])
+@cross_origin()
+def add_dest_list():
+  token = request.json['token']
+  destIds = request.json['destIds']
+  user = jwt.decode(token, JWT_SECRET, audience="all")
+  dest_list = create_dest_list({'user': user['userId'], 'data': destIds})
+  return dumps(dest_list)
 
 @app.route("/api/v1/session", methods=['POST'])
 @cross_origin()
