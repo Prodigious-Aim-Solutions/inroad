@@ -80,7 +80,7 @@ if ("geolocation" in navigator) {
 } else {
   mainApp();
 }
-},{"./badge":2,"./checkin":3,"./map":4,"./register":5,"./signin":6}],2:[function(require,module,exports){
+},{"./badge":2,"./checkin":3,"./map":6,"./register":7,"./signin":8}],2:[function(require,module,exports){
 "use strict";
 
 var _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
@@ -190,6 +190,135 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 },{}],4:[function(require,module,exports){
+"use strict";
+
+var _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
+
+var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
+
+var DestinationList = exports.DestinationList = (function () {
+  function DestinationList() {
+    _classCallCheck(this, DestinationList);
+
+    this.$el = $("#currentList");
+    this.add = this.add.bind(this);
+    this.remove = this.remove.bind(this);
+    this.save = this.save.bind(this);
+    this.listData = [];
+    $(document).on("click", ".btn-add-dest:not(.disabled)", this.add);
+    $(document).on("click", ".btn-remove-dest", this.remove);
+    $("#btnSaveDestList").on("click", this.save);
+  }
+
+  _prototypeProperties(DestinationList, null, {
+    add: {
+      value: function add(e) {
+        var $current = $(e.currentTarget);
+        var data = $current.parents(".location").data("id");
+        if (!this.$el.find("[data-id=\"" + data + "\"]").length && this.listData.indexOf(data) === -1) {
+          this.listData.push(data);
+          var name = $current.parents(".location").find("h4").text();
+          var destinationTmpl = "<li data-loc-id=\"" + data + "\"><h4>" + name + "</h4><div class=\"form-group\"><input type=\"button\" class=\"btn btn-remove-dest\" value=\"Remove\" /></div></li>";
+          this.$el.find("ul").append(destinationTmpl);
+          //$current.addClass('disabled');
+        }
+      },
+      writable: true,
+      configurable: true
+    },
+    remove: {
+      value: function remove(e) {
+        var $current = $(e.currentTarget);
+        var $parent = $current.parents("li");
+        var data = $parent.data("locId");
+        var index = this.listData.indexOf(data);
+        this.listData = this.listData.splice(index, 1);
+        $parent.remove();
+      },
+      writable: true,
+      configurable: true
+    },
+    save: {
+      value: function save(e) {
+        var _this = this;
+
+        var $current = $(e.currentTarget);
+        var id = this.$el.data("id");
+        var destIds = [];
+        var user_token = window.token;
+        var items = this.$el.find("ul li");
+        items.each(function (index, el) {
+          destIds.push($(el).data("locId"));
+        });
+        var list = {
+          id: id,
+          destIds: destIds,
+          token: user_token
+        };
+        $.ajax({
+          type: "POST",
+          url: "/api/v1/destinationlist",
+          data: JSON.stringify(list),
+          contentType: "application/json",
+          success: function (data) {
+            data = JSON.parse(data);
+            // sets id if not set
+            _this.$el.data("id", data.id);
+          },
+          error: function (err) {}
+        });
+        $(document).trigger("saveDestList", id);
+      },
+      writable: true,
+      configurable: true
+    }
+  });
+
+  return DestinationList;
+})();
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+},{}],5:[function(require,module,exports){
+"use strict";
+
+var _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
+
+var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
+
+var DestinationLists = exports.DestinationLists = (function () {
+  function DestinationLists() {
+    _classCallCheck(this, DestinationLists);
+
+    this.listSaved = this.listSaved.bind(this);
+    this.$el = $("#lists");
+    $(document).on("saveDestList", this.listSaved);
+  }
+
+  _prototypeProperties(DestinationLists, null, {
+    listSaved: {
+      value: function listSaved(e, listId) {
+        // update list or add new item
+        var list = this.$el.find("li[data-id=\"" + listId + "\"]");
+        if (list.length) {} else {}
+      },
+      writable: true,
+      configurable: true
+    }
+  });
+
+  return DestinationLists;
+})();
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+//update
+
+//add list
+},{}],6:[function(require,module,exports){
 "use strict";
 
 var _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
@@ -318,7 +447,7 @@ var Map = exports.Map = (function () {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-},{}],5:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 "use strict";
 
 var _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
@@ -382,7 +511,7 @@ var Register = exports.Register = (function () {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-},{}],6:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 "use strict";
 
 var _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
@@ -470,4 +599,4 @@ var SignIn = exports.SignIn = (function () {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-},{}]},{},[1,2,3,4,5,6]);
+},{}]},{},[1,2,3,4,5,6,7,8]);
