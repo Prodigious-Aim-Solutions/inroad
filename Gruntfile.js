@@ -1,3 +1,5 @@
+var optipng = require('imagemin-optipng');
+
 module.exports = function(grunt) {
 
   grunt.initConfig({
@@ -18,11 +20,25 @@ module.exports = function(grunt) {
     },
     'browserify': {
       'static/js/app.js': ['src/.tmp/*.js']
+    },
+    'imagemin': {
+      default: {
+        options: {
+          optimizationLevel: 7,
+          use: [optipng()]
+        },
+        files: {
+          'static/images/Southwest_corner_of_Cape_Breton_Highlands_National_Park.png': 'static/images/Southwest_corner_of_Cape_Breton_Highlands_National_Park.png'
+        }
+      }
     }
   });
 
   grunt.loadNpmTasks('grunt-babel');
   grunt.loadNpmTasks('grunt-browserify');
+  grunt.loadNpmTasks('grunt-contrib-imagemin');
+  
+  grunt.registerTask('compress', ['imagemin']);
 
   grunt.registerTask('default', ['babel', 'browserify']);
 

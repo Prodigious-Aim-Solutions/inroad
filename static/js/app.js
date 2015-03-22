@@ -114,7 +114,8 @@ if ("geolocation" in navigator) {
 } else {
   mainApp();
 }
-},{"./badge":2,"./checkin":3,"./destinationList":4,"./destinationLists":5,"./map":6,"./register":7,"./signin":8}],2:[function(require,module,exports){
+
+},{"./badge":2,"./checkin":3,"./map":6,"./register":7,"./signin":8}],2:[function(require,module,exports){
 "use strict";
 
 var _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
