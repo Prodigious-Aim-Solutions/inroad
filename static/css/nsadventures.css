@@ -11,13 +11,6 @@ root {
     display: block;
 }
 
-#mainApp li {
-  background: white;
-  padding: 10px;
-  border-radius: 3px;
-  margin: 5px 0;
-}
-
 #mainLogo {
   margin: 0 auto;
 }
@@ -37,10 +30,17 @@ root {
 .modal h3 {
   color: #333;
 }
-#btnGo, #btnRefresh, #btnSaveDestList {
+#btnGo, #btnRefresh {
   margin-top: 15px;
   background: white;
   color: black;
+}
+
+#currentList li {
+  background-color: ghostwhite;
+  padding: 5px 10px;
+  margin: 2px;
+  border-radius: 3px;
 }
 
 
@@ -113,21 +113,15 @@ root {
 
 body {
   margin: 0;
-<<<<<<< HEAD
-  background-image: url(../images/Southwest_corner_of_Cape_Breton_Highlands_National_Park.png);
-=======
   background-image: url(../images/ns_a_background.jpg);
->>>>>>> master
   /* background-size: 800px 1400px;  */
   background-repeat:no-repeat;
   /*  display: compact; */
   font: 13px/18px "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
-.checkbox label{
-  color: white;
-}
-
 .outline-text {
     text-shadow: black 1px 1px;
 }
+
+ 

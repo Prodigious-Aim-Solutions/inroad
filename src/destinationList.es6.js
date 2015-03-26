@@ -4,19 +4,27 @@ export class DestinationList {
     this.add = this.add.bind(this);
     this.remove = this.remove.bind(this);
     this.save = this.save.bind(this);
+    this.getDirections = this.getDirections.bind(this);
     this.listData = [];
     $(document).on('click', '.btn-add-dest:not(.disabled)', this.add);
     $(document).on('click', '.btn-remove-dest', this.remove);
+    $(document).on('click', '.btn-get-directions', this.getDirections);
     $('#btnSaveDestList').on('click', this.save);
   }
   
   add(e) {
     var $current = $(e.currentTarget);
-    var data = $current.parents('.location').data('id');
+    var $location = $current.parents('.location');
+    var data = $location.data('id');
+    var type = $location.data('type');
+    var location = $location.data('location')
     if(!this.$el.find(`[data-id="${data}"]`).length && this.listData.indexOf(data) === -1) {
       this.listData.push(data);
       var name = $current.parents('.location').find('h4').text();
-      var destinationTmpl = `<li data-loc-id="${data}"><h4>${name}</h4><div class="form-group"><input type="button" class="btn btn-remove-dest" value="Remove" /></div></li>`;
+      var destinationTmpl = `<li data-loc-id="${data}" data-loc-type="${type}" data-loc-location="${location}"><h4>${name}</h4><div class="form-group">
+                             <input type="button" class="btn btn-remove-dest form-control btn-danger" value="Remove" />
+                             <input type="button" class="btn btn-get-directions form-control btn-info" value="Get Directions"
+                             </div></li>`;
       this.$el.find('ul').append(destinationTmpl);
       //$current.addClass('disabled');
     }
@@ -61,5 +69,12 @@ export class DestinationList {
       }
     })
     $(document).trigger('saveDestList', id);
+  }
+  
+  getDirections(e) {
+    var $location = $(e.currentTarget).parents('li');
+    var location = $location.data('locLocation');
+    var [lat, lon] = location.split(',');
+    $(document).trigger('getDirections', [lat, lon]);
   }
 }

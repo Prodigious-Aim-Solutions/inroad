@@ -1,5 +1,8 @@
 export class Map {
   constructor(lat, lon, zoom, type){
+    this.directionsLayer = new TurfMap.DirectionsLayer();
+    this.getDirections = this.getDirections.bind(this);
+    $(document).on('getDirections', this.getDirections);
     this.mapDisplayData = this.displayData.bind(this);
     this.lat = lat;
     this.lon = lon;
@@ -9,9 +12,11 @@ export class Map {
       lon: lon,
       zoom: zoom,
       minZoom: 7,
-      layers: []
+      layers: [
+        this.directionsLayer
+      ]
     });
-    this.getData(type);
+    this.getData(type);    
   }
 
   displayData(data, locType) {
@@ -37,7 +42,7 @@ export class Map {
         inBounds = true;
       }
       var infoWindow = new TurfMap.InfoWindow().data;
-      var wrap = `<div data-id="${el.locId}" data-type="${locType}" class="location">`;
+      var wrap = `<div data-id="${el.locId}" data-type="${locType}" data-location="${el.geometry.coordinates[1]},${el.geometry.coordinates[0]}" class="location">`;
       var title = "<h4>" + el.title + "</h4>";
       var checkin = inBounds ? "<div class='form-group'><input type='button' class='btn btn-checkin' value='Check In Here' /></div>" : "";
       var addToDest = "<div class='form-group'><input type='button' class='btn btn-add-dest' value='Add to Destinations' /></div>";
@@ -109,5 +114,15 @@ export class Map {
       });
    }
     
+  }
+  
+  getDirections (e, locLat, latLon) {
+    var destination = new google.maps.LatLng(parseFloat(locLat), parseFloat(latLon));
+    var request = {
+      origin: this.userLoc,
+      destination: destination,
+      travelMode: google.maps.TravelMode.DRIVING
+    }
+    this.directionsLayer.setRoute(request)
   }
 }

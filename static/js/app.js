@@ -114,8 +114,7 @@ if ("geolocation" in navigator) {
 } else {
   mainApp();
 }
-
-},{"./badge":2,"./checkin":3,"./map":6,"./register":7,"./signin":8}],2:[function(require,module,exports){
+},{"./badge":2,"./checkin":3,"./destinationList":4,"./destinationLists":5,"./map":6,"./register":7,"./signin":8}],2:[function(require,module,exports){
 "use strict";
 
 var _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
@@ -227,6 +226,8 @@ Object.defineProperty(exports, "__esModule", {
 },{}],4:[function(require,module,exports){
 "use strict";
 
+var _slicedToArray = function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { var _arr = []; for (var _iterator = arr[Symbol.iterator](), _step; !(_step = _iterator.next()).done;) { _arr.push(_step.value); if (i && _arr.length === i) break; } return _arr; } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } };
+
 var _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
 
 var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
@@ -239,9 +240,11 @@ var DestinationList = exports.DestinationList = (function () {
     this.add = this.add.bind(this);
     this.remove = this.remove.bind(this);
     this.save = this.save.bind(this);
+    this.getDirections = this.getDirections.bind(this);
     this.listData = [];
     $(document).on("click", ".btn-add-dest:not(.disabled)", this.add);
     $(document).on("click", ".btn-remove-dest", this.remove);
+    $(document).on("click", ".btn-get-directions", this.getDirections);
     $("#btnSaveDestList").on("click", this.save);
   }
 
@@ -249,11 +252,14 @@ var DestinationList = exports.DestinationList = (function () {
     add: {
       value: function add(e) {
         var $current = $(e.currentTarget);
-        var data = $current.parents(".location").data("id");
+        var $location = $current.parents(".location");
+        var data = $location.data("id");
+        var type = $location.data("type");
+        var location = $location.data("location");
         if (!this.$el.find("[data-id=\"" + data + "\"]").length && this.listData.indexOf(data) === -1) {
           this.listData.push(data);
           var name = $current.parents(".location").find("h4").text();
-          var destinationTmpl = "<li data-loc-id=\"" + data + "\"><h4>" + name + "</h4><div class=\"form-group\"><input type=\"button\" class=\"btn btn-remove-dest\" value=\"Remove\" /></div></li>";
+          var destinationTmpl = "<li data-loc-id=\"" + data + "\" data-loc-type=\"" + type + "\" data-loc-location=\"" + location + "\"><h4>" + name + "</h4><div class=\"form-group\">\n                             <input type=\"button\" class=\"btn btn-remove-dest form-control btn-danger\" value=\"Remove\" />\n                             <input type=\"button\" class=\"btn btn-get-directions form-control btn-info\" value=\"Get Directions\"\n                             </div></li>";
           this.$el.find("ul").append(destinationTmpl);
           //$current.addClass('disabled');
         }
@@ -303,6 +309,23 @@ var DestinationList = exports.DestinationList = (function () {
           error: function (err) {}
         });
         $(document).trigger("saveDestList", id);
+      },
+      writable: true,
+      configurable: true
+    },
+    getDirections: {
+      value: function getDirections(e) {
+        var $location = $(e.currentTarget).parents("li");
+        var location = $location.data("locLocation");
+
+        var _location$split = location.split(",");
+
+        var _location$split2 = _slicedToArray(_location$split, 2);
+
+        var lat = _location$split2[0];
+        var lon = _location$split2[1];
+
+        $(document).trigger("getDirections", [lat, lon]);
       },
       writable: true,
       configurable: true
@@ -364,6 +387,9 @@ var Map = exports.Map = (function () {
   function Map(lat, lon, zoom, type) {
     _classCallCheck(this, Map);
 
+    this.directionsLayer = new TurfMap.DirectionsLayer();
+    this.getDirections = this.getDirections.bind(this);
+    $(document).on("getDirections", this.getDirections);
     this.mapDisplayData = this.displayData.bind(this);
     this.lat = lat;
     this.lon = lon;
@@ -373,7 +399,7 @@ var Map = exports.Map = (function () {
       lon: lon,
       zoom: zoom,
       minZoom: 7,
-      layers: []
+      layers: [this.directionsLayer]
     });
     this.getData(type);
   }
@@ -405,7 +431,7 @@ var Map = exports.Map = (function () {
             inBounds = true;
           }
           var infoWindow = new TurfMap.InfoWindow().data;
-          var wrap = "<div data-id=\"" + el.locId + "\" data-type=\"" + locType + "\" class=\"location\">";
+          var wrap = "<div data-id=\"" + el.locId + "\" data-type=\"" + locType + "\" data-location=\"" + el.geometry.coordinates[1] + "," + el.geometry.coordinates[0] + "\" class=\"location\">";
           var title = "<h4>" + el.title + "</h4>";
           var checkin = inBounds ? "<div class='form-group'><input type='button' class='btn btn-checkin' value='Check In Here' /></div>" : "";
           var addToDest = "<div class='form-group'><input type='button' class='btn btn-add-dest' value='Add to Destinations' /></div>";
@@ -482,6 +508,19 @@ var Map = exports.Map = (function () {
             }
           });
         }
+      },
+      writable: true,
+      configurable: true
+    },
+    getDirections: {
+      value: function getDirections(e, locLat, latLon) {
+        var destination = new google.maps.LatLng(parseFloat(locLat), parseFloat(latLon));
+        var request = {
+          origin: this.userLoc,
+          destination: destination,
+          travelMode: google.maps.TravelMode.DRIVING
+        };
+        this.directionsLayer.setRoute(request);
       },
       writable: true,
       configurable: true
