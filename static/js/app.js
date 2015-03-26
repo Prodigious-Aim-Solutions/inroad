@@ -388,6 +388,7 @@ var Map = exports.Map = (function () {
     _classCallCheck(this, Map);
 
     this.directionsLayer = new TurfMap.DirectionsLayer();
+    this.placesLayer = new TurfMap.PlacesLayer();
     this.getDirections = this.getDirections.bind(this);
     $(document).on("getDirections", this.getDirections);
     this.mapDisplayData = this.displayData.bind(this);
@@ -399,7 +400,7 @@ var Map = exports.Map = (function () {
       lon: lon,
       zoom: zoom,
       minZoom: 7,
-      layers: [this.directionsLayer]
+      layers: [this.directionsLayer, this.placesLayer]
     });
     this.getData(type);
   }
@@ -508,6 +509,12 @@ var Map = exports.Map = (function () {
             }
           });
         }
+
+        this.placesLayer.nearbySearch({
+          location: this.map.details.location,
+          radius: "10000",
+          type: ["establishment"]
+        });
       },
       writable: true,
       configurable: true
