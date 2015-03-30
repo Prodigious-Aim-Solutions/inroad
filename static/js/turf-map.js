@@ -214,7 +214,7 @@
       return this;
     }
 
-    DirectionsLayer.prototype.setRoute = function(request) {
+    DirectionsLayer.prototype.setRoute = function(request, resultCb) {
       var waypoints;
       if ((this.dataset != null) && (this.dataset.origin != null) && (this.dataset.destination != null)) {
         waypoints = this._createWaypoints(this.dataset.waypoints);
@@ -228,7 +228,12 @@
       this.service.route(request, (function(_this) {
         return function(results, status) {
           if (status === google.maps.DirectionsStatus.OK) {
-            return _this.data.setDirections(results);
+            if (!resultCb) {
+              return _this.data.setDirections(results);
+            } else {
+              _this.data.setDirections(results);
+              return resultCb(results, status);
+            }
           }
         };
       })(this));
@@ -237,15 +242,18 @@
 
     DirectionsLayer.prototype._createWaypoints = function(waypoints) {
       var output, waypoint, waypointAry, _i, _len;
-      output = [];
-      waypointAry = waypoints.split('|');
-      for (_i = 0, _len = waypointAry.length; _i < _len; _i++) {
-        waypoint = waypointAry[_i];
-        output.push({
-          location: waypoint
-        });
+      if (waypoints) {
+        output = [];
+        waypointAry = waypoints.split('|');
+        for (_i = 0, _len = waypointAry.length; _i < _len; _i++) {
+          waypoint = waypointAry[_i];
+          output.push({
+            location: waypoint
+          });
+        }
+        return output;
       }
-      return output;
+      return [];
     };
 
     return DirectionsLayer;
@@ -307,7 +315,7 @@
       return this;
     };
 
-    PlacesLayer.prototype.nearbySearch = function(request) {
+    PlacesLayer.prototype.nearbySearch = function(request, cb) {
       if ((request != null) || (this.dataset != null)) {
         if (this.dataset && (this.dataset.radius != null)) {
           request = {
@@ -321,7 +329,11 @@
             if (status === google.maps.places.PlacesServiceStatus.OK) {
               for (_i = 0, _len = results.length; _i < _len; _i++) {
                 result = results[_i];
-                _this._createMarker(result);
+                if (cb == null) {
+                  _this._createMarker(result);
+                } else {
+                  cb(result);
+                }
               }
             }
           };
@@ -402,27 +414,32 @@
       this._createLabel = __bind(this._createLabel, this);
       this._addLayer = __bind(this._addLayer, this);
       this._layers = __bind(this._layers, this);
+      var el, _i, _len, _ref;
       if ((args != null) && !args.lat || !args.lon) {
-        this.el = document.getElementById(args.el);
-        this.el.innerHTML = "<div id='mapCanvas'></div><div id='mapControls'></div>";
-        this.map = document.getElementById('mapCanvas');
-        this.controls = document.getElementById('mapControls');
-        this.details = new TurfMap.Details({
-          lat: this.el.dataset.lat || "",
-          lon: this.el.dataset.lon || "",
-          loc: this.el.dataset.loc || "",
-          zoom: parseInt(this.el.dataset.zoom) || 12,
-          minZoom: parseInt(this.el.dataset.minzoom) || 8
-        });
-        this.canvas = new TurfMap.Canvas({
-          el: this.map,
-          details: this.details.mapOptions()
-        }).create();
-        this.infoWindow = new TurfMap.InfoWindow().create();
-        if (args.layers != null) {
-          this.layers = this._layers(args.layers);
-          if ((this.el.dataset != null) && this.el.dataset.layersOff) {
-            this._turnOffLayers(this.el.dataset.layersOff);
+        this.els = document.getElementsByClassName(args.el);
+        _ref = this.els;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          el = _ref[_i];
+          el.innerHTML = "<div class='mapCanvas'></div><div class='mapControls'></div>";
+          this.map = document.getElementsByClassName('mapCanvas')[0];
+          this.controls = document.getElementsByClassName('mapControls')[0];
+          this.details = new TurfMap.Details({
+            lat: el.dataset.lat || "",
+            lon: el.dataset.lon || "",
+            loc: el.dataset.loc || "",
+            zoom: parseInt(el.dataset.zoom) || 12,
+            minZoom: parseInt(el.dataset.minzoom) || 8
+          });
+          this.canvas = new TurfMap.Canvas({
+            el: this.map,
+            details: this.details.mapOptions()
+          }).create();
+          this.infoWindow = new TurfMap.InfoWindow().create();
+          if (args.layers != null) {
+            this.layers = this._layers(args.layers, el.dataset);
+            if ((el.dataset != null) && el.dataset.layersOff) {
+              this._turnOffLayers(el.dataset.layersOff);
+            }
           }
         }
       } else if ((args != null) && typeof args === 'object') {
@@ -443,22 +460,22 @@
       return this;
     }
 
-    Map.prototype._layers = function(args) {
+    Map.prototype._layers = function(args, dataset) {
       if (args != null) {
-        this._addLayers(args);
+        this._addLayers(args, dataset);
       } else {
         return this._currentLayers;
       }
       return this;
     };
 
-    Map.prototype._addLayers = function(args) {
+    Map.prototype._addLayers = function(args, dataset) {
       var layer, _i, _len, _results;
       if (args instanceof Array) {
         _results = [];
         for (_i = 0, _len = args.length; _i < _len; _i++) {
           layer = args[_i];
-          _results.push(this._addLayer(layer));
+          _results.push(this._addLayer(layer, dataset));
         }
         return _results;
       } else {
@@ -466,12 +483,12 @@
       }
     };
 
-    Map.prototype._addLayer = function(layer) {
+    Map.prototype._addLayer = function(layer, dataset) {
       layer.setMap(this.canvas);
       layer.setLocation(this.details.location);
       layer.setInfoWindow(this.infoWindow);
-      if (this.el.dataset != null) {
-        layer.setDataset(this.el.dataset);
+      if (dataset != null) {
+        layer.setDataset(dataset);
       }
       this.controls.appendChild(this._createLabel(layer.id));
       this.controls.appendChild(this._createControl(layer.id));

@@ -5,12 +5,14 @@ export class DestinationList {
     this.remove = this.remove.bind(this);
     this.save = this.save.bind(this);
     this.getDirections = this.getDirections.bind(this);
+    this.displayDirections = this.displayDirections.bind(this);
     this.listData = [];
     this.name = "";
     this.id = -1;
     $(document).on('click', '.btn-add-dest:not(.disabled)', this.add);
     $(document).on('click', '.btn-remove-dest', this.remove);
     $(document).on('click', '.btn-get-directions', this.getDirections);
+    $(document).on('displayResults', this.displayDirections)
     $('#btnSaveDestList').on('click', this.save);
   }
   
@@ -84,6 +86,29 @@ export class DestinationList {
     var $location = $(e.currentTarget).parents('li');
     var location = $location.data('locLocation');
     var [lat, lon] = location.split(',');
+    $location.siblings().removeClass('get-directions')
+    $location.addClass('get-directions');    
     $(document).trigger('getDirections', [lat, lon]);
+  }
+  
+  displayDirections(e, results){
+    //var $this = $('.get-directions')[0];
+    var $li = $('.get-directions');
+    var output = "<ol>";
+    var steps = results.routes[0].legs[0].steps;
+    for(var i in steps){
+      var step = steps[i];
+      output += `<li>  ${step.instructions} </li>`;
+    }
+    output += "</ol>"
+    $li.append(output);
+  }
+  
+  getItinerary(e){
+    var $li = this.$el.find('ul li');
+    $li.each(function(index, el){
+      let location = $(this).data('locLocation');
+      let [lat, lon] = location.split(',');
+    });
   }
 }

@@ -241,12 +241,14 @@ var DestinationList = exports.DestinationList = (function () {
     this.remove = this.remove.bind(this);
     this.save = this.save.bind(this);
     this.getDirections = this.getDirections.bind(this);
+    this.displayDirections = this.displayDirections.bind(this);
     this.listData = [];
     this.name = "";
     this.id = -1;
     $(document).on("click", ".btn-add-dest:not(.disabled)", this.add);
     $(document).on("click", ".btn-remove-dest", this.remove);
     $(document).on("click", ".btn-get-directions", this.getDirections);
+    $(document).on("displayResults", this.displayDirections);
     $("#btnSaveDestList").on("click", this.save);
   }
 
@@ -336,7 +338,42 @@ var DestinationList = exports.DestinationList = (function () {
         var lat = _location$split2[0];
         var lon = _location$split2[1];
 
+        $location.siblings().removeClass("get-directions");
+        $location.addClass("get-directions");
         $(document).trigger("getDirections", [lat, lon]);
+      },
+      writable: true,
+      configurable: true
+    },
+    displayDirections: {
+      value: function displayDirections(e, results) {
+        //var $this = $('.get-directions')[0];
+        var $li = $(".get-directions");
+        var output = "<ol>";
+        var steps = results.routes[0].legs[0].steps;
+        for (var i in steps) {
+          var step = steps[i];
+          output += "<li>  " + step.instructions + " </li>";
+        }
+        output += "</ol>";
+        $li.append(output);
+      },
+      writable: true,
+      configurable: true
+    },
+    getItinerary: {
+      value: function getItinerary(e) {
+        var $li = this.$el.find("ul li");
+        $li.each(function (index, el) {
+          var location = $(this).data("locLocation");
+
+          var _location$split = location.split(",");
+
+          var _location$split2 = _slicedToArray(_location$split, 2);
+
+          var lat = _location$split2[0];
+          var lon = _location$split2[1];
+        });
       },
       writable: true,
       configurable: true
@@ -572,7 +609,14 @@ var Map = exports.Map = (function () {
           destination: destination,
           travelMode: google.maps.TravelMode.DRIVING
         };
-        this.directionsLayer.setRoute(request);
+        this.directionsLayer.setRoute(request, this.displayResults);
+      },
+      writable: true,
+      configurable: true
+    },
+    displayResults: {
+      value: function displayResults(results) {
+        $(document).trigger("displayResults", results);
       },
       writable: true,
       configurable: true

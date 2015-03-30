@@ -131,6 +131,10 @@ export class Map {
       destination: destination,
       travelMode: google.maps.TravelMode.DRIVING
     }
-    this.directionsLayer.setRoute(request)
+    this.directionsLayer.setRoute(request, this.displayResults)
+  }
+  
+  displayResults(results){
+    $(document).trigger('displayResults', results);
   }
 }
