@@ -97,6 +97,10 @@ def create_dest_list(dest_list):
   new_dest_list = db.destinationlists.insert(dest_list)
   return new_dest_list
 
+def get_user_lists(user):
+  lists = db.destinationlists.find({'user': user['userId']})
+  return lists
+
 
 app = Flask(__name__)
 cors = CORS(app)
@@ -122,7 +126,7 @@ def dated_url_for(endpoint, **values):
 
 @app.route("/")
 def hello():
-    return render_template("index.html")
+    return render_template("index.html"), 200
   
 @app.route("/api/v1/register", methods=['POST'])
 def register():
@@ -134,10 +138,10 @@ def register():
                              request.json['email'],
                              request.json['password'])
     user = log_the_user_in(request.json['username'], request.json['password'])
-    return json.dumps({"user": user})
+    return json.dumps({"user": user}), 200
   else:
     error = 'Invalid username/password'
-    return json.dumps({"error": error})
+    return json.dumps({"Error": error}), 401
     
 @app.route("/api/v1/signin", methods=['POST'])
 @cross_origin()
@@ -146,9 +150,12 @@ def signin():
     form = SignInForm.from_json(request.json)
     if form.validate():
       user = log_the_user_in(request.json['username'], request.json['password'])
-      return json.dumps({"user": user})
+      if not 'error' in user.keys():
+        return json.dumps({"user": user}), 200
+      else:
+        return json.dumps({"Error": "Authentication failed"}), 401
     else:
-      return json.dumps({"error": "authentication failed"})
+      return json.dumps({"Error": "Authentication failed"}), 401
     
 @app.route("/api/v1/checkin", methods=['POST'])
 @cross_origin()
@@ -168,17 +175,37 @@ def checkin():
     badge_out = False
     if badge:
       badge_out = {'locType': badge['locType'], 'level': badge['level']}
-    return json.dumps({'checkin': 'success', 'badge': badge_out})
-  return json.dumps({'error': 'Unsuccessful checkin'})
+    return json.dumps({'checkin': 'success', 'badge': badge_out}), 200
+  return json.dumps({'Error': 'Unsuccessful checkin'}), 401
+
+@app.route("/api/v1/destinationlist", methods=['GET'])
+@cross_origin()
+def get_dest_lists():
+  token = request.args.get('token')
+  if token:
+    user = jwt.decode(token, JWT_SECRET, audience="all")
+    lists = get_user_lists(user)
+    return dumps(lists), 200
+  else:
+    return dumps({'Error': 'Not Authorized For Action'}), 401
 
 @app.route("/api/v1/destinationlist", methods=['POST'])
 @cross_origin()
 def add_dest_list():
   token = request.json['token']
-  destIds = request.json['destIds']
-  user = jwt.decode(token, JWT_SECRET, audience="all")
-  dest_list = create_dest_list({'user': user['userId'], 'data': destIds})
-  return dumps(dest_list)
+  if token:
+    destIds = request.json['destIds']
+    name = request.json['name']
+    user = jwt.decode(token, JWT_SECRET, audience="all")
+    dest_list = create_dest_list({'user': user['userId'], 'data': destIds, 'name': name, 'updated': datetime.datetime.now()})
+    saved_list = {
+      'id': str(dest_list),
+      'name': name,
+      'updated': str(datetime.datetime.now())
+    }
+    return dumps(saved_list), 200
+  else: 
+    return dumps({'Error': 'Not Authorized For Action'}), 401
 
 @app.route("/api/v1/session", methods=['POST'])
 @cross_origin()
@@ -189,9 +216,9 @@ def check_session():
     user = {
       "username": valid_token['username']
     }
-    return json.dumps({"user": user})
+    return json.dumps({"user": user}), 200
   except jwt.ExpiredSignatureError:
-    return json.dumps({"user": False})
+    return json.dumps({"user": False}), 401
   
 
 if __name__ == "__main__":

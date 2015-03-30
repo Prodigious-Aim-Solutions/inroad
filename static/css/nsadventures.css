@@ -36,7 +36,7 @@ root {
   color: black;
 }
 
-#currentList li {
+#currentList li, #lists li {
   background-color: ghostwhite;
   padding: 5px 10px;
   margin: 2px;

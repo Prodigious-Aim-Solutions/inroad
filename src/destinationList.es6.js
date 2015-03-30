@@ -6,6 +6,8 @@ export class DestinationList {
     this.save = this.save.bind(this);
     this.getDirections = this.getDirections.bind(this);
     this.listData = [];
+    this.name = "";
+    this.id = -1;
     $(document).on('click', '.btn-add-dest:not(.disabled)', this.add);
     $(document).on('click', '.btn-remove-dest', this.remove);
     $(document).on('click', '.btn-get-directions', this.getDirections);
@@ -42,20 +44,26 @@ export class DestinationList {
   
   save(e) {
     var $current = $(e.currentTarget);
-    var id = this.$el.data('id');
+    this.id = this.$el.data('id');
+    this.name = $('#listName').val()
     var destIds = [];
-    var user_token = window.token;
+    var user_token = window.token || "";
     var items = this.$el.find('ul li');
     items.each((index, el) =>{
       destIds.push($(el).data('locId'));
-    });
+    });    
     var list = {
-      id: id,
+      id: this.id,
       destIds: destIds,
+      name: this.name,
       token: user_token
     };
+    var type = 'POST';
+    if(this.id) {
+      type = 'PUT';
+    }
     $.ajax({
-      type: 'POST',
+      type: type,
       url: '/api/v1/destinationlist',
       data: JSON.stringify(list),
       contentType: 'application/json',
@@ -63,12 +71,13 @@ export class DestinationList {
         data = JSON.parse(data);
         // sets id if not set
         this.$el.data('id', data.id);
+        this.id = data.id;
+        $(document).trigger('listSaved', list);
       },
-      error: (err) => {
-        
+      error: (err, strErr) => {
+        $('#listErr').append(`Error: ${strErr}`);
       }
-    })
-    $(document).trigger('saveDestList', id);
+    });
   }
   
   getDirections(e) {

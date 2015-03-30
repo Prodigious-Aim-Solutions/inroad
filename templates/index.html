@@ -114,24 +114,28 @@
             </select>
             <input id="btnRefresh" type="button" class="btn btn-primary pull-right" value="Get Your Adventure!" />
           </div>
-          <div class="input-center">
+          <div id="lists" class="input-center">
             <h3 class="outline-text">Adventure Lists</h3>
             <ul class="list-unstyled">
-              <li>
-                <h4>Sample List</h4>
-                <div class="last-update">
-                  Last Updated on 03/17/2015
-                </div>
-              </li>
+           
             </ul>
           </div>
           <div id="currentList" class="input-center">
-            <h3 class="outline-text">Sample List</h3>
+            <h3 class="outline-text">Current List</h3>
             <ul class="list-unstyled">
               
             </ul>
             <div class="form-group">
-              <input id="btnSaveDestList" type="button" class="btn btn-primary pull-right" value="Save List" />
+              <div class="form-group">
+                <label>List Name: </label>
+                <input id="listName" type="text" class="form-control" placeholder="New List" />
+              </div>
+              
+              <input id="btnDirDestList" type="button" class="btn btn-primary pull-right" value="Get Full List Directions" />
+              <input id="btnSaveDestList" type="button" class="btn btn-primary pull-left" value="Save List" />
+            </div>
+            <div id="listErr">
+              
             </div>
           </div>
         </div>

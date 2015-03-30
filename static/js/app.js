@@ -242,6 +242,8 @@ var DestinationList = exports.DestinationList = (function () {
     this.save = this.save.bind(this);
     this.getDirections = this.getDirections.bind(this);
     this.listData = [];
+    this.name = "";
+    this.id = -1;
     $(document).on("click", ".btn-add-dest:not(.disabled)", this.add);
     $(document).on("click", ".btn-remove-dest", this.remove);
     $(document).on("click", ".btn-get-directions", this.getDirections);
@@ -284,20 +286,26 @@ var DestinationList = exports.DestinationList = (function () {
         var _this = this;
 
         var $current = $(e.currentTarget);
-        var id = this.$el.data("id");
+        this.id = this.$el.data("id");
+        this.name = $("#listName").val();
         var destIds = [];
-        var user_token = window.token;
+        var user_token = window.token || "";
         var items = this.$el.find("ul li");
         items.each(function (index, el) {
           destIds.push($(el).data("locId"));
         });
         var list = {
-          id: id,
+          id: this.id,
           destIds: destIds,
+          name: this.name,
           token: user_token
         };
+        var type = "POST";
+        if (this.id) {
+          type = "PUT";
+        }
         $.ajax({
-          type: "POST",
+          type: type,
           url: "/api/v1/destinationlist",
           data: JSON.stringify(list),
           contentType: "application/json",
@@ -305,10 +313,13 @@ var DestinationList = exports.DestinationList = (function () {
             data = JSON.parse(data);
             // sets id if not set
             _this.$el.data("id", data.id);
+            _this.id = data.id;
+            $(document).trigger("listSaved", list);
           },
-          error: function (err) {}
+          error: function (err, strErr) {
+            $("#listErr").append("Error: " + strErr);
+          }
         });
-        $(document).trigger("saveDestList", id);
       },
       writable: true,
       configurable: true
@@ -351,15 +362,53 @@ var DestinationLists = exports.DestinationLists = (function () {
 
     this.listSaved = this.listSaved.bind(this);
     this.$el = $("#lists");
-    $(document).on("saveDestList", this.listSaved);
+    $(document).on("listSaved", this.listSaved);
+    this.loadLists();
   }
 
   _prototypeProperties(DestinationLists, null, {
+    loadLists: {
+      value: function loadLists() {
+        var _this = this;
+
+        var token = window.token;
+        if (token) {
+          $.ajax({
+            url: "/api/v1/destinationlist?token=" + token,
+            type: "GET",
+            success: function (data) {
+              data = JSON.parse(data);
+              for (var i in data) {
+                var list = data[i];
+                _this.addList(list);
+              }
+            },
+            error: function (err, errStr) {}
+          });
+        }
+      },
+      writable: true,
+      configurable: true
+    },
+    addList: {
+      value: function addList(list) {
+        var date = new Date(list.updated.$date);
+        var tmp = "<li data-id=\"" + list.id + "\" data-locs=\"" + list.data + "\"><h4>" + list.name + "</h4><div class=\"updated\">" + date + "</div></li>";
+        this.$el.find("ul").append(tmp);
+      },
+      writable: true,
+      configurable: true
+    },
     listSaved: {
-      value: function listSaved(e, listId) {
+      value: function listSaved(e, list) {
         // update list or add new item
-        var list = this.$el.find("li[data-id=\"" + listId + "\"]");
-        if (list.length) {} else {}
+        var tmp = "<li data-id=\"" + list.id + "\" data-locs=\"" + list.data + "\"><h4>" + list.name + "</h4><div class=\"updated\">" + list.updated + "</div></li>";
+        var list = this.$el.find("li[data-id=\"" + list.id + "\"]");
+        if (list.length) {
+          //update
+          list.remove();
+        }
+        this.$el.find("ul").append(tmp);
       },
       writable: true,
       configurable: true
@@ -372,10 +421,6 @@ var DestinationLists = exports.DestinationLists = (function () {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
-//update
-
-//add list
 },{}],6:[function(require,module,exports){
 "use strict";
 
