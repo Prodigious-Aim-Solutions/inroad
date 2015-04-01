@@ -398,8 +398,10 @@ var DestinationLists = exports.DestinationLists = (function () {
     _classCallCheck(this, DestinationLists);
 
     this.listSaved = this.listSaved.bind(this);
+    this.loadList = this.loadList.bind(this);
     this.$el = $("#lists");
     $(document).on("listSaved", this.listSaved);
+    this.$el.on("click", "li", this.loadList);
     this.loadLists();
   }
 
@@ -446,6 +448,23 @@ var DestinationLists = exports.DestinationLists = (function () {
           list.remove();
         }
         this.$el.find("ul").append(tmp);
+      },
+      writable: true,
+      configurable: true
+    },
+    loadList: {
+      value: function loadList(e) {
+        var $this = $(e.currentTarget);
+        var data = $this.data("id");
+        var token = window.token;
+        $.ajax({
+          type: "GET",
+          url: "/api/v1/destinationlist/" + token + "/" + data,
+          success: function (list) {
+            $(document).trigger("listDataLoaded", list);
+          },
+          error: function (err, errStr) {}
+        });
       },
       writable: true,
       configurable: true
@@ -552,7 +571,8 @@ var Map = exports.Map = (function () {
         var $this = this;
         if (type === "parks") {
           $.ajax({
-            url: "static/new_parks_conservation.json",
+            url: "/api/v1/parks",
+            dataType: "json",
             success: function success(data) {
               $this.mapDisplayData(data, "park");
             },

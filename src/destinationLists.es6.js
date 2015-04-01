@@ -1,8 +1,10 @@
 export class DestinationLists {
   constructor() {
     this.listSaved = this.listSaved.bind(this);
+    this.loadList = this.loadList.bind(this);
     this.$el = $('#lists');
     $(document).on('listSaved', this.listSaved);
+    this.$el.on('click', 'li', this.loadList);
     this.loadLists();
   }
   
@@ -26,7 +28,7 @@ export class DestinationLists {
     }
   }
   
-  addList(list){
+  addList(list) {
     var date = new Date(list.updated.$date)
     var tmp = `<li data-id="${list.id}" data-locs="${list.data}"><h4>${list.name}</h4><div class="updated">${date}</div></li>`;
     this.$el.find('ul').append(tmp);
@@ -42,4 +44,21 @@ export class DestinationLists {
     } 
     this.$el.find('ul').append(tmp);
   }
+  
+  loadList(e) {
+    var $this = $(e.currentTarget);
+    var data = $this.data('id');
+    var token = window.token;
+    $.ajax({
+      type: 'GET',
+      url: `/api/v1/destinationlist/${token}/${data}`,
+      success: (list) => {
+        $(document).trigger('listDataLoaded', list);
+      },
+      error: (err, errStr) =>{
+      
+      }
+    });
+  }
+  
 }

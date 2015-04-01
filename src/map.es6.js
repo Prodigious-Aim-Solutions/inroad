@@ -76,7 +76,8 @@ export class Map {
     var $this = this;
     if(type === 'parks'){
       $.ajax({
-        url: "static/new_parks_conservation.json",
+        url: "/api/v1/parks",
+        dataType: 'json',
         success: function(data){
           $this.mapDisplayData(data, 'park')
         },

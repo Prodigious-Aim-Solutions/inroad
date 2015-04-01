@@ -101,6 +101,14 @@ def get_user_lists(user):
   lists = db.destinationlists.find({'user': user['userId']})
   return lists
 
+def get_user_list(user, list_id):
+  list = db.destinationlists.find({'user': user['userId'], 'objectid': list_id})
+  return list
+
+def get_parks_data(query):
+  parks = db.parks.find(query)
+  return parks
+
 
 app = Flask(__name__)
 cors = CORS(app)
@@ -178,6 +186,12 @@ def checkin():
     return json.dumps({'checkin': 'success', 'badge': badge_out}), 200
   return json.dumps({'Error': 'Unsuccessful checkin'}), 401
 
+@app.route("/api/v1/parks", methods=['GET'])
+@cross_origin()
+def get_parks():
+  parks = get_parks_data({})
+  return dumps(parks), 200
+
 @app.route("/api/v1/destinationlist", methods=['GET'])
 @cross_origin()
 def get_dest_lists():
@@ -188,6 +202,16 @@ def get_dest_lists():
     return dumps(lists), 200
   else:
     return dumps({'Error': 'Not Authorized For Action'}), 401
+  
+@app.route("/api/v1/destinationlist/<token>/<list_id>", methods=['GET'])
+@cross_origin()
+def get_dest_list(token, list_id):
+  try:
+    user = jwt.decode(token, JWT_SECRET, audience="all")
+  except:
+    return dumps({'Error': 'Not Authorized For Action'}), 401
+  list = get_user_list(user, list_id)
+  return dumps(list), 200
 
 @app.route("/api/v1/destinationlist", methods=['POST'])
 @cross_origin()
