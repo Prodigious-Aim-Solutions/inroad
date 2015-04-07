@@ -18,6 +18,7 @@ export class DestinationLists {
           data = JSON.parse(data);
           for(var i in data){
             var list = data[i];
+            if (data[i]._id.$oid){ data[i]["id"] = data[i]._id.$oid; }
             this.addList(list);
           }
         },

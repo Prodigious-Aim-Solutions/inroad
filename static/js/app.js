@@ -242,6 +242,8 @@ var DestinationList = exports.DestinationList = (function () {
     this.save = this.save.bind(this);
     this.getDirections = this.getDirections.bind(this);
     this.displayDirections = this.displayDirections.bind(this);
+    this.display = this.display.bind(this);
+    this.displayAll = this.displayAll.bind(this);
     this.listData = [];
     this.name = "";
     this.id = -1;
@@ -249,6 +251,7 @@ var DestinationList = exports.DestinationList = (function () {
     $(document).on("click", ".btn-remove-dest", this.remove);
     $(document).on("click", ".btn-get-directions", this.getDirections);
     $(document).on("displayResults", this.displayDirections);
+    $(document).on("listDataLoaded", this.displayAll);
     $("#btnSaveDestList").on("click", this.save);
   }
 
@@ -260,13 +263,24 @@ var DestinationList = exports.DestinationList = (function () {
         var data = $location.data("id");
         var type = $location.data("type");
         var location = $location.data("location");
+        var name = $current.parents(".location").find("h4").text();
         if (!this.$el.find("[data-id=\"" + data + "\"]").length && this.listData.indexOf(data) === -1) {
-          this.listData.push(data);
-          var name = $current.parents(".location").find("h4").text();
-          var destinationTmpl = "<li data-loc-id=\"" + data + "\" data-loc-type=\"" + type + "\" data-loc-location=\"" + location + "\"><h4>" + name + "</h4><div class=\"form-group\">\n                             <input type=\"button\" class=\"btn btn-remove-dest form-control btn-danger\" value=\"Remove\" />\n                             <input type=\"button\" class=\"btn btn-get-directions form-control btn-info\" value=\"Get Directions\"\n                             </div></li>";
-          this.$el.find("ul").append(destinationTmpl);
-          //$current.addClass('disabled');
+          this.display({
+            data: data,
+            type: type,
+            location: location,
+            name: name
+          });
         }
+      },
+      writable: true,
+      configurable: true
+    },
+    display: {
+      value: function display(data) {
+        this.listData.push(data.data);
+        var destinationTmpl = "<li data-loc-id=\"" + data.data + "\" data-loc-type=\"" + data.type + "\" data-loc-location=\"" + data.location + "\"><h4>" + data.name + "</h4><div class=\"form-group\">\n<input type=\"button\" class=\"btn btn-remove-dest form-control btn-danger\" value=\"Remove\" />\n<input type=\"button\" class=\"btn btn-get-directions form-control btn-info\" value=\"Get Directions\"\n</div></li>";
+        this.$el.find("ul").append(destinationTmpl);
       },
       writable: true,
       configurable: true
@@ -322,6 +336,22 @@ var DestinationList = exports.DestinationList = (function () {
             $("#listErr").append("Error: " + strErr);
           }
         });
+      },
+      writable: true,
+      configurable: true
+    },
+    displayAll: {
+      value: function displayAll(e, data) {
+        data = JSON.parse(data);
+        for (var i in data.location) {
+          data.location[i].data = data.location[i].locId;
+          data.location[i].name = data.location[i].title;
+          data.location[i].geometry.flipped = [];
+          data.location[i].geometry.flipped[0] = data.location[i].geometry.coordinates[1];
+          data.location[i].geometry.flipped[1] = data.location[i].geometry.coordinates[0];
+          data.location[i].location = data.location[i].geometry.flipped.join(",");
+          this.display(data.location[i]);
+        }
       },
       writable: true,
       configurable: true
@@ -386,6 +416,7 @@ var DestinationList = exports.DestinationList = (function () {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+//$current.addClass('disabled');
 },{}],5:[function(require,module,exports){
 "use strict";
 
@@ -419,6 +450,9 @@ var DestinationLists = exports.DestinationLists = (function () {
               data = JSON.parse(data);
               for (var i in data) {
                 var list = data[i];
+                if (data[i]._id.$oid) {
+                  data[i].id = data[i]._id.$oid;
+                }
                 _this.addList(list);
               }
             },
@@ -582,7 +616,8 @@ var Map = exports.Map = (function () {
           });
         } else {
           $.ajax({
-            url: "static/new_events.json",
+            url: "/api/v1/historic",
+            dataType: "json",
             success: function success(data) {
               $this.mapDisplayData(data, "historic");
             },
@@ -592,7 +627,8 @@ var Map = exports.Map = (function () {
           });
 
           $.ajax({
-            url: "static/new_persons.json",
+            url: "/api/v1/historic",
+            dataType: "json",
             success: function success(data) {
               $this.mapDisplayData(data, "historic");
             },
@@ -602,7 +638,8 @@ var Map = exports.Map = (function () {
           });
 
           $.ajax({
-            url: "static/new_sites_clean.json",
+            url: "/api/v1/historic",
+            dataType: "json",
             success: function success(data) {
               $this.mapDisplayData(data, "historic");
             },

@@ -102,12 +102,25 @@ def get_user_lists(user):
   return lists
 
 def get_user_list(user, list_id):
-  list = db.destinationlists.find({'user': user['userId'], 'objectid': list_id})
+  list = db.destinationlists.find_one({'user': user['userId'], '_id': ObjectId(list_id)})
+  print list
+  list['location'] = []
+  for loc in list['data']:
+    print list
+    #list["location"] = []
+    if loc > 46 and loc < 1269:
+      list['location'].append(db.parks.find_one({"locId": loc}))
+    else:
+      list['location'].append(db.historic.find_one({"locId": loc})) 
   return list
 
 def get_parks_data(query):
   parks = db.parks.find(query)
   return parks
+
+def get_historic_data(query):
+  events = db.historic.find(query)
+  return events
 
 
 app = Flask(__name__)
@@ -190,6 +203,12 @@ def checkin():
 @cross_origin()
 def get_parks():
   parks = get_parks_data({})
+  return dumps(parks), 200
+
+@app.route("/api/v1/historic", methods=['GET'])
+@cross_origin()
+def get_historic():
+  parks = get_historic_data({})
   return dumps(parks), 200
 
 @app.route("/api/v1/destinationlist", methods=['GET'])

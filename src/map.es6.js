@@ -87,7 +87,8 @@ export class Map {
       });
     } else {
       $.ajax({
-        url: "static/new_events.json",
+        url: "/api/v1/historic",
+        dataType: 'json',
         success: function(data){
           $this.mapDisplayData(data, 'historic')
         },
@@ -97,7 +98,8 @@ export class Map {
       });
 
       $.ajax({
-        url: "static/new_persons.json",
+        url: "/api/v1/historic",
+        dataType: 'json',
         success: function(data){
           $this.mapDisplayData(data, 'historic');
         },
@@ -107,7 +109,8 @@ export class Map {
       });
 
       $.ajax({
-        url: "static/new_sites_clean.json",
+        url: "/api/v1/historic",
+        dataType: 'json',
         success: function(data){
           $this.mapDisplayData(data, 'historic');
         },

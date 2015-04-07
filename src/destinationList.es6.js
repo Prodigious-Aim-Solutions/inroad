@@ -6,13 +6,16 @@ export class DestinationList {
     this.save = this.save.bind(this);
     this.getDirections = this.getDirections.bind(this);
     this.displayDirections = this.displayDirections.bind(this);
+    this.display = this.display.bind(this);
+    this.displayAll = this.displayAll.bind(this);
     this.listData = [];
     this.name = "";
     this.id = -1;
     $(document).on('click', '.btn-add-dest:not(.disabled)', this.add);
     $(document).on('click', '.btn-remove-dest', this.remove);
     $(document).on('click', '.btn-get-directions', this.getDirections);
-    $(document).on('displayResults', this.displayDirections)
+    $(document).on('displayResults', this.displayDirections);
+    $(document).on('listDataLoaded', this.displayAll);
     $('#btnSaveDestList').on('click', this.save);
   }
   
@@ -21,17 +24,26 @@ export class DestinationList {
     var $location = $current.parents('.location');
     var data = $location.data('id');
     var type = $location.data('type');
-    var location = $location.data('location')
+    var location = $location.data('location');
+    var name = $current.parents('.location').find('h4').text();
     if(!this.$el.find(`[data-id="${data}"]`).length && this.listData.indexOf(data) === -1) {
-      this.listData.push(data);
-      var name = $current.parents('.location').find('h4').text();
-      var destinationTmpl = `<li data-loc-id="${data}" data-loc-type="${type}" data-loc-location="${location}"><h4>${name}</h4><div class="form-group">
-                             <input type="button" class="btn btn-remove-dest form-control btn-danger" value="Remove" />
-                             <input type="button" class="btn btn-get-directions form-control btn-info" value="Get Directions"
-                             </div></li>`;
-      this.$el.find('ul').append(destinationTmpl);
+      this.display({
+        data: data,
+        type: type,
+        location: location,
+        name: name
+      })
       //$current.addClass('disabled');
     }
+  }
+  
+  display(data){
+    this.listData.push(data.data);
+    var destinationTmpl = `<li data-loc-id="${data.data}" data-loc-type="${data.type}" data-loc-location="${data.location}"><h4>${data.name}</h4><div class="form-group">
+<input type="button" class="btn btn-remove-dest form-control btn-danger" value="Remove" />
+<input type="button" class="btn btn-get-directions form-control btn-info" value="Get Directions"
+</div></li>`;
+    this.$el.find('ul').append(destinationTmpl);
   }
   
   remove(e) {
@@ -80,6 +92,19 @@ export class DestinationList {
         $('#listErr').append(`Error: ${strErr}`);
       }
     });
+  }
+  
+  displayAll(e, data){
+    data = JSON.parse(data);
+    for(var i in data.location){
+      data.location[i].data = data.location[i].locId;
+      data.location[i].name = data.location[i].title;
+      data.location[i].geometry.flipped = [];
+      data.location[i].geometry.flipped[0] = data.location[i].geometry.coordinates[1];
+      data.location[i].geometry.flipped[1] = data.location[i].geometry.coordinates[0];
+      data.location[i].location = data.location[i].geometry.flipped.join(',');
+      this.display(data.location[i]);
+    }
   }
   
   getDirections(e) {
