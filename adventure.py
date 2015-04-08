@@ -97,16 +97,18 @@ def create_dest_list(dest_list):
   new_dest_list = db.destinationlists.insert(dest_list)
   return new_dest_list
 
+def update_dest_list(dest_list):
+  updated_list = db.destinationlists.update({'_id': ObjectId(dest_list["id"])}, dest_list)
+  return updated_list
+
 def get_user_lists(user):
   lists = db.destinationlists.find({'user': user['userId']})
   return lists
 
 def get_user_list(user, list_id):
   list = db.destinationlists.find_one({'user': user['userId'], '_id': ObjectId(list_id)})
-  print list
   list['location'] = []
   for loc in list['data']:
-    print list
     #list["location"] = []
     if loc > 46 and loc < 1269:
       list['location'].append(db.parks.find_one({"locId": loc}))
@@ -241,6 +243,25 @@ def add_dest_list():
     name = request.json['name']
     user = jwt.decode(token, JWT_SECRET, audience="all")
     dest_list = create_dest_list({'user': user['userId'], 'data': destIds, 'name': name, 'updated': datetime.datetime.now()})
+    saved_list = {
+      'id': str(dest_list),
+      'name': name,
+      'updated': str(datetime.datetime.now())
+    }
+    return dumps(saved_list), 200
+  else: 
+    return dumps({'Error': 'Not Authorized For Action'}), 401
+  
+@app.route("/api/v1/destinationlist", methods=['PUT'])
+@cross_origin()
+def change_dest_list():
+  token = request.json['token']
+  if token:
+    destIds = request.json['destIds']
+    name = request.json['name']
+    id = request.json['id']
+    user = jwt.decode(token, JWT_SECRET, audience="all")
+    dest_list = update_dest_list({'id': id, 'user': user['userId'], 'data': destIds, 'name': name, 'updated': datetime.datetime.now()})
     saved_list = {
       'id': str(dest_list),
       'name': name,

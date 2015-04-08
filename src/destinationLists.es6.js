@@ -55,6 +55,7 @@ export class DestinationLists {
       url: `/api/v1/destinationlist/${token}/${data}`,
       success: (list) => {
         $(document).trigger('listDataLoaded', list);
+        
       },
       error: (err, errStr) =>{
       

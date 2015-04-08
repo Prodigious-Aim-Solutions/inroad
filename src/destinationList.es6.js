@@ -10,7 +10,7 @@ export class DestinationList {
     this.displayAll = this.displayAll.bind(this);
     this.listData = [];
     this.name = "";
-    this.id = -1;
+    this.id = undefined;
     $(document).on('click', '.btn-add-dest:not(.disabled)', this.add);
     $(document).on('click', '.btn-remove-dest', this.remove);
     $(document).on('click', '.btn-get-directions', this.getDirections);
@@ -20,6 +20,7 @@ export class DestinationList {
   }
   
   add(e) {
+    this.$el.removeClass('hide');
     var $current = $(e.currentTarget);
     var $location = $current.parents('.location');
     var data = $location.data('id');
@@ -32,8 +33,7 @@ export class DestinationList {
         type: type,
         location: location,
         name: name
-      })
-      //$current.addClass('disabled');
+      });
     }
   }
   
@@ -53,13 +53,16 @@ export class DestinationList {
     var index = this.listData.indexOf(data);
     this.listData = this.listData.splice(index, 1);
     $parent.remove();
-    
+    if(this.listData.length < 1){
+      this.$el.addClass('hide');
+      this.name = "";
+      this.id = undefined;
+    }
   }
   
   save(e) {
     var $current = $(e.currentTarget);
-    this.id = this.$el.data('id');
-    this.name = $('#listName').val()
+    this.name = $('#listName').val();
     var destIds = [];
     var user_token = window.token || "";
     var items = this.$el.find('ul li');
@@ -95,7 +98,12 @@ export class DestinationList {
   }
   
   displayAll(e, data){
+    this.$el.removeClass('hide');
+    this.$el.find('ul').empty();
     data = JSON.parse(data);
+    this.name = data.name;
+    $('#listName').val(data.name);
+    this.id = data._id.$oid;
     for(var i in data.location){
       data.location[i].data = data.location[i].locId;
       data.location[i].name = data.location[i].title;
@@ -117,7 +125,6 @@ export class DestinationList {
   }
   
   displayDirections(e, results){
-    //var $this = $('.get-directions')[0];
     var $li = $('.get-directions');
     var output = "<ol>";
     var steps = results.routes[0].legs[0].steps;
