@@ -671,6 +671,7 @@ var Map = exports.Map = (function () {
     this.mapDisplayData = this.displayData.bind(this);
     this.lat = lat;
     this.lon = lon;
+    this.activeWindow = null;
     this.map = new TurfMap.Map({
       el: document.getElementById("theMap"),
       lat: lat,
@@ -695,6 +696,7 @@ var Map = exports.Map = (function () {
         });
         this.user.setIcon(this.usrImg);
         $.each(data, function (index, el) {
+          var self = _this;
           var latLon = new google.maps.LatLng(el.geometry.coordinates[1], el.geometry.coordinates[0]);
           var marker = new TurfMap.Marker().create({
             map: _this.map.canvas,
@@ -709,18 +711,24 @@ var Map = exports.Map = (function () {
             inBounds = true;
           }
           var infoWindow = new TurfMap.InfoWindow().data;
-          var wrap = "<div data-id=\"" + el.locId + "\" data-type=\"" + locType + "\" data-location=\"" + el.geometry.coordinates[1] + "," + el.geometry.coordinates[0] + "\" class=\"location\">";
-          var title = "<h4>" + el.title + "</h4>";
-          var checkin = inBounds ? "<div class='form-group'><input type='button' class='btn btn-checkin' value='Check In Here' /></div>" : "";
-          var addToDest = "<div class='form-group'><input type='button' class='btn btn-add-dest' value='Add to Destinations' /></div>";
-          var description = el.details ? el.details + addToDest + checkin : addToDest + checkin;
-          var content = description ? title + description : title;
-          content = wrap + content + "</div>";
           infoWindow.setOptions({
-            position: latLon,
-            content: content
+            position: latLon
+            //content: content
           });
           TurfMap.Events.on(marker, "click", function () {
+            //move check in here, maybe buid
+            if (self.activeWindow) {
+              self.activeWindow.close();
+            }
+            self.activeWindow = infoWindow;
+            var wrap = "<div data-id=\"" + el.locId + "\" data-type=\"" + locType + "\" data-location=\"" + el.geometry.coordinates[1] + "," + el.geometry.coordinates[0] + "\" class=\"location\">";
+            var title = "<h4>" + el.title + "</h4>";
+            var checkin = inBounds ? "<div class='form-group'><input type='button' class='btn btn-checkin' value='Check In Here' /></div>" : "";
+            var addToDest = "<div class='form-group'><input type='button' class='btn btn-add-dest' value='Add to Destinations' /></div>";
+            var description = el.details ? el.details + addToDest + checkin : addToDest + checkin;
+            var content = description ? title + description : title;
+            content = wrap + content + "</div>";
+            infoWindow.setContent(content);
             infoWindow.open(this.map, marker);
           });
           $(document).on("checkInComplete", function () {
