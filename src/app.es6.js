@@ -79,6 +79,11 @@ var updateLocation = (lat, lon) => {
 };
 
 if ("geolocation" in navigator) {
+  var geo_options = {
+    enableHighAccuracy: true, 
+    maximumAge        : 5000, 
+    timeout           : 10000
+  };
   navigator.geolocation.getCurrentPosition((position) => {
     setLocaton(position.coords.latitude, position.coords.longitude)
     mainApp();
@@ -89,7 +94,7 @@ if ("geolocation" in navigator) {
   if(app.watch){
     var watchID = navigator.geolocation.watchPosition(function(position) {
       updateLocation(position.coords.latitude, position.coords.longitude);
-    });
+    }, function(){ }, geo_options);
     $('#selUpdate, #refUpdate').on('change', () =>{      
       if($(this).is(':checked')){
         app.watch = true;

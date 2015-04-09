@@ -2,10 +2,14 @@ export class DestinationLists {
   constructor() {
     this.listSaved = this.listSaved.bind(this);
     this.loadList = this.loadList.bind(this);
+    this.listDeleted = this.listDeleted.bind(this);
+    this.loadLists = this.loadLists.bind(this);
     this.$el = $('#lists');
     $(document).on('listSaved', this.listSaved);
+    $(document).on('listDeleted', this.listDeleted);
+    $(document).on('signInComplete', this.loadLists);
     this.$el.on('click', 'li', this.loadList);
-    this.loadLists();
+    //this.loadLists();
   }
   
   loadLists(){
@@ -44,6 +48,10 @@ export class DestinationLists {
       list.remove();
     } 
     this.$el.find('ul').append(tmp);
+  }
+  
+  listDeleted(e, listId){
+    this.$el.find(`[data-id="${listId}"]`).remove();
   }
   
   loadList(e) {

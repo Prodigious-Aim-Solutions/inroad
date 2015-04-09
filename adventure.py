@@ -101,6 +101,10 @@ def update_dest_list(dest_list):
   updated_list = db.destinationlists.update({'_id': ObjectId(dest_list["id"])}, dest_list)
   return updated_list
 
+def delete_dest_list(user, list_id):
+  deleted = db.destinationlists.delete_one({'_id': ObjectId(list_id)})
+  return deleted
+
 def get_user_lists(user):
   lists = db.destinationlists.find({'user': user['userId']})
   return lists
@@ -270,6 +274,18 @@ def change_dest_list():
     return dumps(saved_list), 200
   else: 
     return dumps({'Error': 'Not Authorized For Action'}), 401
+  
+@app.route("/api/v1/destinationlist/<token>/<list_id>", methods=['DELETE'])
+@cross_origin()
+def remove_dest_list(token, list_id):
+  try:
+    user = jwt.decode(token, JWT_SECRET, audience="all")
+  except:
+    return dumps({'Error': 'Not Authorized For Action'}), 401
+  deleted = delete_dest_list(user, list_id)
+  if deleted:
+    return dumps({'deleted': True}), 200
+  return dumps({'Error': 'Problem deleting list'}), 500
 
 @app.route("/api/v1/session", methods=['POST'])
 @cross_origin()

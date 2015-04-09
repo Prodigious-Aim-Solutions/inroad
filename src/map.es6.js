@@ -128,12 +128,12 @@ export class Map {
     
   }
   
-  getDirections (e, locLat, latLon) {
+  getDirections (e, locLat, latLon, dirType) {
     var destination = new google.maps.LatLng(parseFloat(locLat), parseFloat(latLon));
     var request = {
       origin: this.userLoc,
       destination: destination,
-      travelMode: google.maps.TravelMode.DRIVING
+      travelMode: dirType || google.maps.TravelMode.DRIVING
     }
     this.directionsLayer.setRoute(request, this.displayResults)
   }
