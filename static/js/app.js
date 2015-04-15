@@ -688,13 +688,17 @@ var Map = exports.Map = (function () {
       value: function displayData(data, locType) {
         var _this = this;
 
-        this.usrImg = "static/images/user.png";
-        this.userLoc = new google.maps.LatLng(this.lat, this.lon);
-        this.user = new TurfMap.Marker().create({
-          map: this.map.canvas,
-          location: this.userLoc
+        var parent = this;
+        TurfMap.Events.on(parent.map.canvas, "idle", function () {
+          parent.usrImg = "static/images/user.png";
+          parent.userLoc = new google.maps.LatLng(parent.lat, parent.lon);
+          parent.user = new TurfMap.Marker().create({
+            map: parent.map.canvas,
+            location: parent.userLoc
+          });
+          parent.user.setIcon(parent.usrImg);
+          google.maps.event.clearListeners(parent.map.canvas, "idle");
         });
-        this.user.setIcon(this.usrImg);
         $.each(data, function (index, el) {
           var self = _this;
           var latLon = new google.maps.LatLng(el.geometry.coordinates[1], el.geometry.coordinates[0]);
@@ -707,9 +711,6 @@ var Map = exports.Map = (function () {
           var swLatLong = new google.maps.LatLng(parseFloat(el.geometry.coordinates[1]) - 0.0005, parseFloat(el.geometry.coordinates[0]) - 0.0005);
           var bounds = new google.maps.LatLngBounds(swLatLong, neLatLon);
           var inBounds = false;
-          if (bounds.contains(_this.userLoc)) {
-            inBounds = true;
-          }
           var infoWindow = new TurfMap.InfoWindow().data;
           infoWindow.setOptions({
             position: latLon
@@ -717,6 +718,9 @@ var Map = exports.Map = (function () {
           });
           TurfMap.Events.on(marker, "click", function () {
             //move check in here, maybe buid
+            if (bounds.contains(self.userLoc)) {
+              inBounds = true;
+            }
             if (self.activeWindow) {
               self.activeWindow.close();
             }

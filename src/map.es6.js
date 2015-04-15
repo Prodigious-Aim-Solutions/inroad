@@ -23,13 +23,17 @@ export class Map {
   }
 
   displayData(data, locType) {
-    this.usrImg = "static/images/user.png";
-    this.userLoc = new google.maps.LatLng(this.lat, this.lon);
-    this.user = new TurfMap.Marker().create({
-      map: this.map.canvas,
-      location: this.userLoc 
-    });
-    this.user.setIcon(this.usrImg);
+    var parent = this;
+    TurfMap.Events.on(parent.map.canvas, 'idle', (function(){
+      parent.usrImg = "static/images/user.png";
+      parent.userLoc = new google.maps.LatLng(parent.lat, parent.lon);
+      parent.user = new TurfMap.Marker().create({
+        map: parent.map.canvas,
+        location: parent.userLoc 
+      });
+      parent.user.setIcon(parent.usrImg);
+      google.maps.event.clearListeners(parent.map.canvas, 'idle');
+    }));
     $.each(data, (index, el) => {
       var self = this;
       var latLon = new google.maps.LatLng(el.geometry.coordinates[1], el.geometry.coordinates[0]);
@@ -42,16 +46,16 @@ export class Map {
       var swLatLong = new google.maps.LatLng(parseFloat(el.geometry.coordinates[1]) - 0.0005, parseFloat(el.geometry.coordinates[0]) - 0.0005);
       var bounds = new google.maps.LatLngBounds(swLatLong, neLatLon);
       var inBounds = false;
-      if(bounds.contains(this.userLoc)){
-        inBounds = true;
-      }
       var infoWindow = new TurfMap.InfoWindow().data;      
       infoWindow.setOptions({
         position: latLon
         //content: content
       });
-      TurfMap.Events.on(marker, "click", function () {
+      TurfMap.Events.on(marker, "click", (function () {
         //move check in here, maybe buid
+        if(bounds.contains(self.userLoc)){
+          inBounds = true;
+        }
         if(self.activeWindow){
           self.activeWindow.close();
         }
@@ -65,7 +69,7 @@ export class Map {
         content = wrap + content + "</div>";
         infoWindow.setContent(content);
         infoWindow.open(this.map, marker);
-      });
+      }));
       $(document).on('checkInComplete', function(){
         infoWindow.close()
       });
