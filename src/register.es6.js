@@ -27,6 +27,7 @@ export class Register {
           window.localStorage.setItem('token', window.token);
           $('#signInRegModal').modal('hide');
           $(document).trigger('signInComplete', data.user);
+          $(document).trigger('register:complete');
           $('#regError').hide();
           return
         } else {

@@ -1,9 +1,9 @@
 import json
 
-dir = 'static/'
+dir = '../static/'
 #files = ['events.json', 'parks.json', 'persons.json', 'sites.json']
-files = ['./static/new_parks.json'];
-index = 0
+files = ['new_sites_clean.json'];
+index = 1340
 for file in files:
   out_recs = []
   with open(dir + file, 'rb') as jsonfile:

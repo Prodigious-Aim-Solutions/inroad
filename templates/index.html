@@ -16,13 +16,14 @@
     <!-- Latest compiled and minified JavaScript -->
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
     <!-- Google Maps -->
-    <script type="text/javascript" src="//maps.googleapis.com/maps/api/js?key=AIzaSyDEdJiqc4XZ1WReZ7O8VcZDCwZxGUyGucU&sensor=false"></script>
+    <script type="text/javascript" src="//maps.googleapis.com/maps/api/js?key=AIzaSyDEdJiqc4XZ1WReZ7O8VcZDCwZxGUyGucU&libraries=places&sensor=false"></script>
     <!-- google fonts -->      
     <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Dancing Script">
     <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Gudea">      
     <!-- custom CSS -->  
-    <link rel="stylesheet" type="text/css" href="static/css/nsadventures.css"> 
-    <link rel="stylesheet" type="text/css" href="static/css/main.css">
+    <!-- <link rel="stylesheet" type="text/css" href="static/css/nsadventures.css"> -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/nsadventures.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
   </head>
   <body>
     <nav class="navbar navbar-default">
@@ -61,7 +62,12 @@
               <option value="centralns">Central Nova Scotia</option>
               <option value="capebreton">Cape Breton</option>
             </select>
-          </div>
+            <div class="checkbox">
+              <label class="outline-text">
+                <input type="checkbox" id="selUpdate" checked/> Automatically Update Location?
+              </label>
+            </div>
+          </div>          
           <div class="input-center input-group input-group-md">
             <p class="text-center outline-text">What Kind Of Adventure Do You Want?</p>
             <!--       Second Menu - Choose Type of Adventure   -->
@@ -82,7 +88,7 @@
         </div>
         <div class="col-md-6">
           <div class="input-center input-group input-group-md">
-            <p class="text-center">Location?</p>
+            <p class="text-center outline-text">Location?</p>
             <!--         First Menu - Choose Location -->
             <select id="refLocation" class="form-control" name="location" id="location" value="Location">
               <option value="">- Select Location -</option>
@@ -92,9 +98,14 @@
               <option value="centralns">Central Nova Scotia</option>
               <option value="capebreton">Cape Breton</option>
             </select>
+            <div class="checkbox">
+              <label class="outline-text">
+                <input type="checkbox" id="selUpdate" checked/> Automatically Update Location?
+              </label>
+            </div>
           </div>
           <div class="input-center input-group input-group-md">
-            <p class="text-center">Type?</p>
+            <p class="text-center outline-text">Type?</p>
             <!--       Second Menu - Choose Type of Adventure   -->
             <select id="refType" class="form-control" name="adventure" id="adventure" value="Adventure">
               <option value="">- Select Type -</option>
@@ -102,6 +113,29 @@
               <option value="parks">Parks</option>
             </select>
             <input id="btnRefresh" type="button" class="btn btn-primary pull-right" value="Get Your Adventure!" />
+          </div>
+          <div id="lists" class="input-center">
+            <h3 class="outline-text">Adventure Lists</h3>
+            <ul class="list-unstyled">
+           
+            </ul>
+          </div>
+          <div id="currentList" class="input-center hide">
+            <h3 class="outline-text">Current List</h3>
+            <ul class="list-unstyled">
+              
+            </ul>
+            <div class="form-group">
+              <div class="form-group">
+                <label>List Name: </label>
+                <input id="listName" type="text" class="form-control" placeholder="New List" />
+              </div>
+              
+              <input id="btnSaveDestList" type="button" class="btn btn-primary pull-left" value="Save List" />
+            </div>
+            <div id="listErr">
+              
+            </div>
           </div>
         </div>
       </section>
@@ -245,9 +279,42 @@
           </div>
         </div><!-- /.modal-content -->
       </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
+    </div><!-- /.modal -->  
     </div>
+    
+    <div id="confirmationModal" class="modal fade">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Confirm</h4>
+          </div>
+          <div class="modal-body">
+            <p></p>
+          </div>
+          <div class="error">
+            
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary btn-action"></button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-60954440-2', 'auto');
+      ga('send', 'pageview');
+
+    </script>
     <script src="static/js/turf-map.js"></script>
-    <script src="static/js/app.js"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    
   </body>
 </html>

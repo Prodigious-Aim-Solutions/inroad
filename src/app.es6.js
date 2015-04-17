@@ -3,6 +3,13 @@ import {Register} from './register';
 import {SignIn} from './signin';
 import {CheckIn} from './checkin';
 import {Badge} from './badge';
+import {DestinationList} from './destinationList';
+import {DestinationLists} from './destinationLists';
+import {Analytics} from './analytics';
+
+var app = {};
+
+app.watch = true;
 
 var LOCATIONS = {
   southshore: [44.629711, -64.738421],
@@ -42,9 +49,10 @@ var loadMapAndData = (e) => {
     $('#splash').hide();
     $('#mainApp').show();
     var zoom = locVal == 'user' ? 12 : 8;
-    newMap = new Map(LOCATIONS[locVal][0], LOCATIONS[locVal][1], zoom, typeVal);
+    app.newMap = new Map(LOCATIONS[locVal][0], LOCATIONS[locVal][1], zoom, typeVal);
     newCheck = new CheckIn();
     newBadge = new Badge();
+    $(document).trigger('location:set', [locVal]);
   }
 }
 
@@ -52,6 +60,9 @@ var mainApp = () => {
   $('#btnGo').on('click', loadMapAndData);
   $("#btnRefresh").on('click', loadMapAndData)
   new Register();
+  new DestinationList();
+  new DestinationLists();
+  new Analytics();
 };
 
 var setLocaton = (lat, lon) => {
@@ -60,16 +71,47 @@ var setLocaton = (lat, lon) => {
   $('#selLocation').val('user');
   $('#refLocation').append(userOpt);
   $('#refLocation').val('user');
-  LOCATIONS['user'] = [lat, lon]
-}
+  LOCATIONS['user'] = [lat, lon];
+  $(document).trigger('location:set', ['user'])
+};
+
+var updateLocation = (lat, lon) => {
+  LOCATIONS['user'] = [lat, lon];
+  if(app.newMap){
+    app.newMap.updateLocation(lat, lon);
+  }
+};
 
 if ("geolocation" in navigator) {
+  var geo_options = {
+    enableHighAccuracy: true, 
+    maximumAge        : 5000, 
+    timeout           : 10000
+  };
   navigator.geolocation.getCurrentPosition((position) => {
     setLocaton(position.coords.latitude, position.coords.longitude)
     mainApp();
   }, () => {
     mainApp();
   });
+  
+  if(app.watch){
+    var watchID = navigator.geolocation.watchPosition(function(position) {
+      updateLocation(position.coords.latitude, position.coords.longitude);
+    }, function(){ }, geo_options);
+    $('#selUpdate, #refUpdate').on('change', () =>{      
+      if($(this).is(':checked')){
+        app.watch = true;
+        watchID = navigator.geolocation.watchPosition(function(position) {
+          updateLocation(position.coords.latitude, position.coords.longitude);
+        });
+        return;
+      }
+      app.watch = false;
+      navigator.geolocation.clearWatch(watchID);
+    });
+  }
+  
 } else {
   mainApp();
 }
