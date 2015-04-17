@@ -1,5 +1,5 @@
 from pymongo import MongoClient
-from flask import Flask, request, render_template, url_for
+from flask import Flask, request, render_template, url_for, make_response
 from wtforms import Form, BooleanField, TextField, PasswordField, validators
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask.ext.cors import CORS, cross_origin
@@ -133,10 +133,10 @@ app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
-@app.after_request
-def add_header(response):
-    response.cache_control.max_age = 300
-    return response
+#@app.after_request
+#def add_header(response):
+#    response.cache_control.max_age = 300
+#    return response
   
 @app.context_processor
 def override_url_for():
@@ -153,8 +153,11 @@ def dated_url_for(endpoint, **values):
 
 @app.route("/")
 def hello():
-    return render_template("index.html"), 200
-  
+    #return render_template("index.html"), 200
+    response = make_response(render_template("index.html"))
+    response.cache_control.max_age = 300
+    return response
+
 @app.route("/api/v1/register", methods=['POST'])
 def register():
   form = RegistrationForm.from_json(request.json)

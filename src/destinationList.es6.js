@@ -177,6 +177,7 @@ export class DestinationList {
   
   displayDirections(e, results){
     var $li = $('.get-directions');
+    $li.find('ol').remove();
     var output = "<ol>";
     var steps = results.routes[0].legs[0].steps;
     for(var i in steps){
