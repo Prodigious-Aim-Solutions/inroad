@@ -15,7 +15,8 @@ module.exports = function(grunt) {
           'src/.tmp/badge.js': 'src/badge.es6.js',
           'src/.tmp/destinationList.js': 'src/destinationList.es6.js',
           'src/.tmp/destinationLists.js': 'src/destinationLists.es6.js',
-          'src/.tmp/confirmationModal.js': 'src/confirmationModal.es6.js'
+          'src/.tmp/confirmationModal.js': 'src/confirmationModal.es6.js',
+          'src/.tmp/analytics.js': 'src/analytics.es6.js'
         }
       }
     },

@@ -22,6 +22,7 @@ export class CheckIn {
           data = JSON.parse(data);
           $target.addClass('disabled')
           $(document).trigger('checkInComplete')
+          $(document).trigger('checkin:complete', [userCheckin.locId, userCheckin.locType]);
           if(data.badge){
             $(document).trigger('badgeEarned', [data.badge.locType, data.badge.level])
           }

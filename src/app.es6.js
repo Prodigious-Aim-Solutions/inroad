@@ -4,7 +4,8 @@ import {SignIn} from './signin';
 import {CheckIn} from './checkin';
 import {Badge} from './badge';
 import {DestinationList} from './destinationList';
-import {DestinationLists} from './destinationLists'
+import {DestinationLists} from './destinationLists';
+import {Analytics} from './analytics';
 
 var app = {};
 
@@ -51,6 +52,7 @@ var loadMapAndData = (e) => {
     app.newMap = new Map(LOCATIONS[locVal][0], LOCATIONS[locVal][1], zoom, typeVal);
     newCheck = new CheckIn();
     newBadge = new Badge();
+    $(document).trigger('location:set', [locVal]);
   }
 }
 
@@ -60,6 +62,7 @@ var mainApp = () => {
   new Register();
   new DestinationList();
   new DestinationLists();
+  new Analytics();
 };
 
 var setLocaton = (lat, lon) => {
@@ -69,6 +72,7 @@ var setLocaton = (lat, lon) => {
   $('#refLocation').append(userOpt);
   $('#refLocation').val('user');
   LOCATIONS['user'] = [lat, lon];
+  $(document).trigger('location:set', ['user'])
 };
 
 var updateLocation = (lat, lon) => {

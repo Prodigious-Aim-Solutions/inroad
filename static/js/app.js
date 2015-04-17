@@ -1,6 +1,71 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 "use strict";
 
+var _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
+
+var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
+
+var Analytics = exports.Analytics = (function () {
+  function Analytics() {
+    _classCallCheck(this, Analytics);
+
+    var self = this;
+    if (ga) {
+      $(document).on("destinationList:add", function (e, id, type) {
+        self.event("destinationList", "add", "" + id + ":" + type, 1);
+      });
+      $(document).on("destinationList:save", function (e) {
+        self.event("destinationList", "save", "list", 1);
+      });
+      $(document).on("destinationList:directions", function (e, loc) {
+        self.event("destinationList", "directions", loc, 1);
+      });
+      $(document).on("destinationLists:load", function (e) {
+        self.event("destinationLists", "load", "list", 1);
+      });
+      $(document).on("badge:earned", function (e, type, level) {
+        self.event("badge", "earned", "" + type + ":" + level, 1);
+      });
+      $(document).on("checkin:complete", function (e, type, id) {
+        self.event("checkin", "complete", "" + type + ":" + id, 1);
+      });
+      $(document).on("register:complete", function (e) {
+        self.event("register", "complete", "user", 1);
+      });
+      $(document).on("signin:complete", function (e) {
+        self.event("signin", "complete", "user", 1);
+      });
+      $(document).on("signin:session", function (e) {
+        self.event("signin", "session", "user", 1);
+      });
+      $(document).on("info:clicked", function (e, type, id) {
+        self.event("info", "clicked", "" + type + ":" + id, 1);
+      });
+      $(document).on("location:set", function (e, loc) {
+        self.event("location", "set", loc, 1);
+      });
+    }
+  }
+
+  _prototypeProperties(Analytics, null, {
+    event: {
+      value: function event(cat, action, label, value) {
+        ga("send", "event", cat, action, label, value);
+      },
+      writable: true,
+      configurable: true
+    }
+  });
+
+  return Analytics;
+})();
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+},{}],2:[function(require,module,exports){
+"use strict";
+
 var Map = require("./map").Map;
 
 var Register = require("./register").Register;
@@ -14,6 +79,8 @@ var Badge = require("./badge").Badge;
 var DestinationList = require("./destinationList").DestinationList;
 
 var DestinationLists = require("./destinationLists").DestinationLists;
+
+var Analytics = require("./analytics").Analytics;
 
 var app = {};
 
@@ -60,6 +127,7 @@ var loadMapAndData = function (e) {
     app.newMap = new Map(LOCATIONS[locVal][0], LOCATIONS[locVal][1], zoom, typeVal);
     newCheck = new CheckIn();
     newBadge = new Badge();
+    $(document).trigger("location:set", [locVal]);
   }
 };
 
@@ -69,6 +137,7 @@ var mainApp = function () {
   new Register();
   new DestinationList();
   new DestinationLists();
+  new Analytics();
 };
 
 var setLocaton = function (lat, lon) {
@@ -78,6 +147,7 @@ var setLocaton = function (lat, lon) {
   $("#refLocation").append(userOpt);
   $("#refLocation").val("user");
   LOCATIONS.user = [lat, lon];
+  $(document).trigger("location:set", ["user"]);
 };
 
 var updateLocation = function (lat, lon) {
@@ -119,7 +189,7 @@ if ("geolocation" in navigator) {
 } else {
   mainApp();
 }
-},{"./badge":2,"./checkin":3,"./destinationList":5,"./destinationLists":6,"./map":7,"./register":8,"./signin":9}],2:[function(require,module,exports){
+},{"./analytics":1,"./badge":3,"./checkin":4,"./destinationList":6,"./destinationLists":7,"./map":8,"./register":9,"./signin":10}],3:[function(require,module,exports){
 "use strict";
 
 var _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
@@ -158,6 +228,7 @@ var Badge = exports.Badge = (function () {
       value: function showBadge(e, type, description) {
         this.setDetails({ type: type, description: description });
         this.displayModal();
+        $(document).trigger("badge:earned", [type, description]);
       },
       writable: true,
       configurable: true
@@ -170,7 +241,7 @@ var Badge = exports.Badge = (function () {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 "use strict";
 
 var _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
@@ -205,6 +276,7 @@ var CheckIn = exports.CheckIn = (function () {
               data = JSON.parse(data);
               $target.addClass("disabled");
               $(document).trigger("checkInComplete");
+              $(document).trigger("checkin:complete", [userCheckin.locId, userCheckin.locType]);
               if (data.badge) {
                 $(document).trigger("badgeEarned", [data.badge.locType, data.badge.level]);
               }
@@ -228,7 +300,7 @@ var CheckIn = exports.CheckIn = (function () {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 "use strict";
 
 var _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
@@ -309,7 +381,7 @@ var ConfirmationModal = exports.ConfirmationModal = (function () {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 "use strict";
 
 var _slicedToArray = function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { var _arr = []; for (var _iterator = arr[Symbol.iterator](), _step; !(_step = _iterator.next()).done;) { _arr.push(_step.value); if (i && _arr.length === i) break; } return _arr; } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } };
@@ -362,6 +434,7 @@ var DestinationList = exports.DestinationList = (function () {
             name: name
           });
         }
+        $(document).trigger("destinationList:add", [data, type]);
       },
       writable: true,
       configurable: true
@@ -449,6 +522,7 @@ var DestinationList = exports.DestinationList = (function () {
             _this.$el.data("id", data.id);
             _this.id = data.id;
             $(document).trigger("listSaved", list);
+            $(document).trigger("destinationList:save");
           },
           error: function (err, strErr) {
             $("#listErr").append("Error: " + strErr);
@@ -504,6 +578,7 @@ var DestinationList = exports.DestinationList = (function () {
         $(".btn-directions").removeClass("active");
         $current.addClass("active");
         $(document).trigger("getDirections", [lat, lon, type[directionType]]);
+        $(document).trigger("destinationList:directions", [location]);
       },
       writable: true,
       configurable: true
@@ -548,7 +623,7 @@ var DestinationList = exports.DestinationList = (function () {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-},{"./confirmationModal":4}],6:[function(require,module,exports){
+},{"./confirmationModal":5}],7:[function(require,module,exports){
 "use strict";
 
 var _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
@@ -638,6 +713,7 @@ var DestinationLists = exports.DestinationLists = (function () {
           url: "/api/v1/destinationlist/" + token + "/" + data,
           success: function (list) {
             $(document).trigger("listDataLoaded", list);
+            $(document).trigger("destinationLists:load");
           },
           error: function (err, errStr) {}
         });
@@ -653,7 +729,7 @@ var DestinationLists = exports.DestinationLists = (function () {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 "use strict";
 
 var _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
@@ -734,6 +810,7 @@ var Map = exports.Map = (function () {
             content = wrap + content + "</div>";
             infoWindow.setContent(content);
             infoWindow.open(this.map, marker);
+            $(document).trigger("info:clicked", [locType, el.locId]);
           });
           $(document).on("checkInComplete", function () {
             infoWindow.close();
@@ -840,7 +917,7 @@ var Map = exports.Map = (function () {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 "use strict";
 
 var _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
@@ -880,6 +957,7 @@ var Register = exports.Register = (function () {
               window.localStorage.setItem("token", window.token);
               $("#signInRegModal").modal("hide");
               $(document).trigger("signInComplete", data.user);
+              $(document).trigger("register:complete");
               $("#regError").hide();
               return;
             } else {
@@ -904,7 +982,7 @@ var Register = exports.Register = (function () {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 "use strict";
 
 var _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
@@ -942,6 +1020,7 @@ var SignIn = exports.SignIn = (function () {
               window.localStorage.setItem("token", window.token);
               $("#signInRegModal").modal("hide");
               $(document).trigger("signInComplete", data.user);
+              $(document).trigger("signin:complete");
               $("#signError").hide();
               return;
             } else {
@@ -972,6 +1051,7 @@ var SignIn = exports.SignIn = (function () {
             data = JSON.parse(data);
             if (data.user) {
               $(document).trigger("signInComplete", data.user);
+              $(document).trigger("signin:session");
             } else {
               window.localStorage.setItem("token", "");
             }
@@ -992,4 +1072,4 @@ var SignIn = exports.SignIn = (function () {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-},{}]},{},[1,2,3,4,5,6,7,8,9]);
+},{}]},{},[1,2,3,4,5,6,7,8,9,10]);

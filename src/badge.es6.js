@@ -20,5 +20,6 @@ export class Badge {
   showBadge(e, type, description){
     this.setDetails({type: type, description: description});
     this.displayModal();
+    $(document).trigger('badge:earned', [type, description]);
   }
 }

@@ -25,6 +25,7 @@ export class SignIn {
           window.localStorage.setItem('token', window.token);
           $('#signInRegModal').modal('hide');
           $(document).trigger('signInComplete', data.user);
+          $(document).trigger('signin:complete');
           $('#signError').hide()
           return
         } else {
@@ -52,6 +53,7 @@ export class SignIn {
         data = JSON.parse(data);
         if(data.user){
           $(document).trigger('signInComplete', data.user);
+          $(document).trigger('signin:session');
         } else {
           window.localStorage.setItem('token', '')
         }

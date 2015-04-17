@@ -63,6 +63,7 @@ export class DestinationLists {
       url: `/api/v1/destinationlist/${token}/${data}`,
       success: (list) => {
         $(document).trigger('listDataLoaded', list);
+        $(document).trigger('destinationLists:load');
         
       },
       error: (err, errStr) =>{

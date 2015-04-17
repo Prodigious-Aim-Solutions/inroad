@@ -38,6 +38,7 @@ export class DestinationList {
         name: name
       });
     }
+    $(document).trigger('destinationList:add', [data, type]);
   }
   
   display(data){
@@ -128,6 +129,7 @@ export class DestinationList {
         this.$el.data('id', data.id);
         this.id = data.id;
         $(document).trigger('listSaved', list);
+        $(document).trigger('destinationList:save');
       },
       error: (err, strErr) => {
         $('#listErr').append(`Error: ${strErr}`);
@@ -170,6 +172,7 @@ export class DestinationList {
     $('.btn-directions').removeClass('active')
     $current.addClass('active');
     $(document).trigger('getDirections', [lat, lon, type[directionType]]);
+    $(document).trigger('destinationList:directions', [location]);
   }
   
   displayDirections(e, results){

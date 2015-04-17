@@ -69,6 +69,7 @@ export class Map {
         content = wrap + content + "</div>";
         infoWindow.setContent(content);
         infoWindow.open(this.map, marker);
+        $(document).trigger('info:clicked', [locType, el.locId]);
       }));
       $(document).on('checkInComplete', function(){
         infoWindow.close()
