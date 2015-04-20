@@ -404,6 +404,7 @@ var DestinationList = exports.DestinationList = (function () {
     this.displayDirections = this.displayDirections.bind(this);
     this.display = this.display.bind(this);
     this.displayAll = this.displayAll.bind(this);
+    this["new"] = this["new"].bind(this);
     this.listData = [];
     this.name = "";
     this.id = undefined;
@@ -414,9 +415,23 @@ var DestinationList = exports.DestinationList = (function () {
     $(document).on("displayResults", this.displayDirections);
     $(document).on("listDataLoaded", this.displayAll);
     $("#btnSaveDestList").on("click", this.save);
+    $("#btnNewDestList").on("click", this["new"]);
   }
 
   _prototypeProperties(DestinationList, null, {
+    "new": {
+      value: function _new(e) {
+        this.listData = [];
+        this.name = "";
+        this.id = undefined;
+        this.$el.data("id", "");
+        this.$el.addClass("hide");
+        this.$el.find("ul").empty();
+        $("#listName").val("");
+      },
+      writable: true,
+      configurable: true
+    },
     add: {
       value: function add(e) {
         this.$el.removeClass("hide");

@@ -10,6 +10,7 @@ export class DestinationList {
     this.displayDirections = this.displayDirections.bind(this);
     this.display = this.display.bind(this);
     this.displayAll = this.displayAll.bind(this);
+    this.new = this.new.bind(this);
     this.listData = [];
     this.name = "";
     this.id = undefined;
@@ -20,6 +21,17 @@ export class DestinationList {
     $(document).on('displayResults', this.displayDirections);
     $(document).on('listDataLoaded', this.displayAll);
     $('#btnSaveDestList').on('click', this.save);
+    $('#btnNewDestList').on('click', this.new);
+  }
+  
+  new(e){
+    this.listData = [];
+    this.name = "";
+    this.id = undefined;
+    this.$el.data('id', "");
+    this.$el.addClass('hide');
+    this.$el.find('ul').empty();
+    $('#listName').val("");
   }
   
   add(e) {
