@@ -49,9 +49,7 @@ var loadMapAndData = (e) => {
     $('#splash').hide();
     $('#mainApp').show();
     var zoom = locVal == 'user' ? 12 : 8;
-    app.newMap = new Map(LOCATIONS[locVal][0], LOCATIONS[locVal][1], zoom, typeVal);
-    newCheck = new CheckIn();
-    newBadge = new Badge();
+    app.newMap = new Map(LOCATIONS[locVal][0], LOCATIONS[locVal][1], zoom, typeVal);    
     $(document).trigger('location:set', [locVal]);
   }
 }
@@ -63,6 +61,8 @@ var mainApp = () => {
   new DestinationList();
   new DestinationLists();
   new Analytics();
+  newCheck = new CheckIn();
+  newBadge = new Badge();
 };
 
 var setLocaton = (lat, lon) => {

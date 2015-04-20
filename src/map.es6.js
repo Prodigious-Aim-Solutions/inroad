@@ -1,7 +1,7 @@
 export class Map {
   constructor(lat, lon, zoom, type){
     this.directionsLayer = new TurfMap.DirectionsLayer();
-    this.placesLayer = new TurfMap.PlacesLayer();
+    //this.placesLayer = new TurfMap.PlacesLayer();
     this.getDirections = this.getDirections.bind(this);
     $(document).on('getDirections', this.getDirections);
     this.mapDisplayData = this.displayData.bind(this);
@@ -15,8 +15,8 @@ export class Map {
       zoom: zoom,
       minZoom: 7,
       layers: [
-        this.directionsLayer,
-        this.placesLayer
+        this.directionsLayer
+        //this.placesLayer
       ]
     });
     this.getData(type);    

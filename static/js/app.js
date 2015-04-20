@@ -125,8 +125,6 @@ var loadMapAndData = function (e) {
     $("#mainApp").show();
     var zoom = locVal == "user" ? 12 : 8;
     app.newMap = new Map(LOCATIONS[locVal][0], LOCATIONS[locVal][1], zoom, typeVal);
-    newCheck = new CheckIn();
-    newBadge = new Badge();
     $(document).trigger("location:set", [locVal]);
   }
 };
@@ -138,6 +136,8 @@ var mainApp = function () {
   new DestinationList();
   new DestinationLists();
   new Analytics();
+  newCheck = new CheckIn();
+  newBadge = new Badge();
 };
 
 var setLocaton = function (lat, lon) {
@@ -757,7 +757,7 @@ var Map = exports.Map = (function () {
     _classCallCheck(this, Map);
 
     this.directionsLayer = new TurfMap.DirectionsLayer();
-    this.placesLayer = new TurfMap.PlacesLayer();
+    //this.placesLayer = new TurfMap.PlacesLayer();
     this.getDirections = this.getDirections.bind(this);
     $(document).on("getDirections", this.getDirections);
     this.mapDisplayData = this.displayData.bind(this);
@@ -770,7 +770,9 @@ var Map = exports.Map = (function () {
       lon: lon,
       zoom: zoom,
       minZoom: 7,
-      layers: [this.directionsLayer, this.placesLayer]
+      layers: [this.directionsLayer
+      //this.placesLayer
+      ]
     });
     this.getData(type);
   }
