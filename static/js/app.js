@@ -125,8 +125,6 @@ var loadMapAndData = function (e) {
     $("#mainApp").show();
     var zoom = locVal == "user" ? 12 : 8;
     app.newMap = new Map(LOCATIONS[locVal][0], LOCATIONS[locVal][1], zoom, typeVal);
-    newCheck = new CheckIn();
-    newBadge = new Badge();
     $(document).trigger("location:set", [locVal]);
   }
 };
@@ -138,6 +136,8 @@ var mainApp = function () {
   new DestinationList();
   new DestinationLists();
   new Analytics();
+  new CheckIn();
+  new Badge();
 };
 
 var setLocaton = function (lat, lon) {
@@ -404,6 +404,7 @@ var DestinationList = exports.DestinationList = (function () {
     this.displayDirections = this.displayDirections.bind(this);
     this.display = this.display.bind(this);
     this.displayAll = this.displayAll.bind(this);
+    this["new"] = this["new"].bind(this);
     this.listData = [];
     this.name = "";
     this.id = undefined;
@@ -414,9 +415,23 @@ var DestinationList = exports.DestinationList = (function () {
     $(document).on("displayResults", this.displayDirections);
     $(document).on("listDataLoaded", this.displayAll);
     $("#btnSaveDestList").on("click", this.save);
+    $("#btnNewDestList").on("click", this["new"]);
   }
 
   _prototypeProperties(DestinationList, null, {
+    "new": {
+      value: function _new(e) {
+        this.listData = [];
+        this.name = "";
+        this.id = undefined;
+        this.$el.data("id", "");
+        this.$el.addClass("hide");
+        this.$el.find("ul").empty();
+        $("#listName").val("");
+      },
+      writable: true,
+      configurable: true
+    },
     add: {
       value: function add(e) {
         this.$el.removeClass("hide");
@@ -586,6 +601,7 @@ var DestinationList = exports.DestinationList = (function () {
     displayDirections: {
       value: function displayDirections(e, results) {
         var $li = $(".get-directions");
+        $li.find("ol").remove();
         var output = "<ol>";
         var steps = results.routes[0].legs[0].steps;
         for (var i in steps) {
@@ -741,7 +757,7 @@ var Map = exports.Map = (function () {
     _classCallCheck(this, Map);
 
     this.directionsLayer = new TurfMap.DirectionsLayer();
-    this.placesLayer = new TurfMap.PlacesLayer();
+    //this.placesLayer = new TurfMap.PlacesLayer();
     this.getDirections = this.getDirections.bind(this);
     $(document).on("getDirections", this.getDirections);
     this.mapDisplayData = this.displayData.bind(this);
@@ -754,7 +770,9 @@ var Map = exports.Map = (function () {
       lon: lon,
       zoom: zoom,
       minZoom: 7,
-      layers: [this.directionsLayer, this.placesLayer]
+      layers: [this.directionsLayer
+      //this.placesLayer
+      ]
     });
     this.getData(type);
   }
@@ -880,11 +898,11 @@ var Map = exports.Map = (function () {
           });
         }
 
-        this.placesLayer.nearbySearch({
-          location: this.map.details.location,
-          radius: "10000",
-          type: ["establishment"]
-        });
+        //this.placesLayer.nearbySearch({
+        //  location: this.map.details.location,
+        //  radius: '10000',
+        //  type: ["establishment"]
+        //});
       },
       writable: true,
       configurable: true

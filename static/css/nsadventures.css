@@ -118,6 +118,7 @@ body {
   background-repeat:no-repeat;
   /*  display: compact; */
   font: 13px/18px "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background-attachment: fixed;
 }
 
 .outline-text {

@@ -1,5 +1,5 @@
 from pymongo import MongoClient
-from flask import Flask, request, render_template, url_for
+from flask import Flask, request, render_template, url_for, make_response
 from wtforms import Form, BooleanField, TextField, PasswordField, validators
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask.ext.cors import CORS, cross_origin
@@ -76,7 +76,8 @@ def check_badge(userId, locType):
     db.badges.insert(badge)
     return False
   checkIns = db.checkin.find({"userId": userId, "locType": locType})
-  checkInsLen = checkIns.count()
+  checkInsLen = len(checkIns.distinct("locId"))
+  print "CheckINfsLen " + str(checkInsLen)
   if badges["level"] == 3:
     return False
   if checkInsLen == 3 and badges["level"] < 1:
@@ -128,15 +129,26 @@ def get_historic_data(query):
   events = db.historic.find(query)
   return events
 
+def do_checkin(checkin):
+  daily_check = db.checkin.find_one({'datetime': {
+        '$gte': datetime.datetime.now() + datetime.timedelta(days=-1),
+        '$lte': datetime.datetime.now()
+      }, 'userId': checkin['userId'], 'locId': checkin['locId']})
+  if not daily_check:
+    db.checkin.insert(checkin)
+    return True
+  else:
+    return False
+
 
 app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
-@app.after_request
-def add_header(response):
-    response.cache_control.max_age = 300
-    return response
+#@app.after_request
+#def add_header(response):
+#    response.cache_control.max_age = 300
+#    return response
   
 @app.context_processor
 def override_url_for():
@@ -153,8 +165,11 @@ def dated_url_for(endpoint, **values):
 
 @app.route("/")
 def hello():
-    return render_template("index.html"), 200
-  
+    #return render_template("index.html"), 200
+    response = make_response(render_template("index.html"))
+    response.cache_control.max_age = 300
+    return response
+
 @app.route("/api/v1/register", methods=['POST'])
 def register():
   form = RegistrationForm.from_json(request.json)
@@ -195,14 +210,16 @@ def checkin():
     checkin = {
       "userId": user['userId'],
       "locId": locId,
-      "locType": locType
+      "locType": locType,
+      "datetime": datetime.datetime.now()
     }
-    db.checkin.insert(checkin)
-    badge = check_badge(user['userId'], locType)
-    badge_out = False
-    if badge:
-      badge_out = {'locType': badge['locType'], 'level': badge['level']}
-    return json.dumps({'checkin': 'success', 'badge': badge_out}), 200
+    check_success = do_checkin(checkin)
+    if check_success:
+      badge = check_badge(user['userId'], locType)
+      badge_out = False
+      if badge:
+        badge_out = {'locType': badge['locType'], 'level': badge['level']}
+      return json.dumps({'checkin': 'success', 'badge': badge_out}), 200
   return json.dumps({'Error': 'Unsuccessful checkin'}), 401
 
 @app.route("/api/v1/parks", methods=['GET'])
