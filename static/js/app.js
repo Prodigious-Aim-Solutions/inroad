@@ -898,11 +898,11 @@ var Map = exports.Map = (function () {
           });
         }
 
-        this.placesLayer.nearbySearch({
-          location: this.map.details.location,
-          radius: "10000",
-          type: ["establishment"]
-        });
+        //this.placesLayer.nearbySearch({
+        //  location: this.map.details.location,
+        //  radius: '10000',
+        //  type: ["establishment"]
+        //});
       },
       writable: true,
       configurable: true
