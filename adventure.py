@@ -76,7 +76,8 @@ def check_badge(userId, locType):
     db.badges.insert(badge)
     return False
   checkIns = db.checkin.find({"userId": userId, "locType": locType})
-  checkInsLen = checkIns.distinct("locId")
+  checkInsLen = len(checkIns.distinct("locId"))
+  print "CheckINfsLen " + str(checkInsLen)
   if badges["level"] == 3:
     return False
   if checkInsLen == 3 and badges["level"] < 1:

@@ -136,8 +136,8 @@ var mainApp = function () {
   new DestinationList();
   new DestinationLists();
   new Analytics();
-  newCheck = new CheckIn();
-  newBadge = new Badge();
+  new CheckIn();
+  new Badge();
 };
 
 var setLocaton = function (lat, lon) {
